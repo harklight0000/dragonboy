@@ -1,0 +1,456 @@
+package services.func;
+
+import clan.Clan;
+import clan.ClanMember;
+import consts.ConstNpc;
+import database.SqlFetcher;
+import player.PlayerDAO;
+import item.Item;
+import services.map.ChangeMapService;
+import services.map.NpcManager;
+import services.map.NpcService;
+import map.Zone;
+import network.Message;
+import network.inetwork.ISession;
+import npc.Npc;
+import player.Inventory;
+import player.Player;
+import services.ClanService;
+import services.player.InventoryService;
+import services.PlayerService;
+import server.Client;
+import server.GameData;
+import services.GiftCodeService;
+import services.ItemService;
+import services.Service;
+import utils.Util;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import shop.ShopService;
+import utils.Functions;
+
+public class Input {
+
+    public static final int CHANGE_PASSWORD = 500;
+    public static final int GIFT_CODE = 501;
+    public static final int FIND_PLAYER = 502;
+    public static final int CHANGE_NAME = 503;
+    public static final int CHOOSE_LEVEL_BDKB = 504;
+    public static final int NAP_THE = 505;
+    public static final int CHANGE_NAME_BY_ITEM = 506;
+    public static final int GIVE_IT = 507;
+    public static final int GET_IT = 508;
+    public static final int DANGKY = 509;
+    public static final int TRADE_GOLD = 5100;
+    public static final int CHOOSE_LEVEL_KGHD = 510;
+    public static final int CHOOSE_LEVEL_CDRD = 511;
+    public static final int DISSOLUTION_CLAN = 513;
+    public static final int TANG_NGOC_HONG = 514;
+    public static final int SELECT_LUCKYNUMBER = 514;
+    public static final byte NUMERIC = 0;
+    public static final byte ANY = 1;
+    public static final byte PASSWORD = 2;
+    public static final byte MA_BAO_VE = 23;
+    public static final byte SELL_THOIVANG = 24;
+    public static final byte CLAN = 25;
+    private static final Map<Integer, Object> PLAYER_ID_OBJECT = new HashMap<>();
+    private static Input intance;
+
+    private Input() {
+
+    }
+
+    public static Input gI() {
+        if (intance == null) {
+            intance = new Input();
+        }
+        return intance;
+    }
+
+    public void doInput(Player player, Message msg) {
+        try {
+            String[] text = new String[msg.reader().readByte()];
+            for (int i = 0; i < text.length; i++) {
+                text[i] = msg.reader().readUTF();
+            }
+            switch (player.idMark.getTypeInput()) {
+                case TRADE_GOLD:
+                    int cuantity1 = Integer.valueOf(text[0]);
+                    if (!player.getSession().actived) {
+                        Service.gI().sendThongBao(player, "Vui lòng kích hoạt tài khoản!");
+                        break;
+                    }
+                    if (cuantity1 < 10000 || cuantity1 > 500_000) {
+                        Service.gI().sendThongBao(player, "Tối thiểu 10.000Đ và tối đa 500.000Đ");
+                        break;
+                    }
+                    if (player.getSession().vnd < cuantity1) {
+                        Service.gI().sendThongBao(player, "Số dư không đủ vui lòng nạp thêm!\n Web: NroBlackgoku.click");
+                        break;
+                    } 
+                    int currentVnd = player.getSession().vnd - cuantity1;
+                    player.getSession().vnd -= cuantity1;
+                    PlayerDAO.updateVnd(player, currentVnd);
+                    
+                    int soLuongItem = (cuantity1 / 1000) * 2;
+                    Item item457 = ItemService.gI().createNewItem((short) 457, 1);
+                    item457.quantity = soLuongItem;
+                    InventoryService.gI().addItemBag(player, item457);
+                    InventoryService.gI().sendItemBags(player);
+
+                    Service.gI().sendThongBao(player, "Đã đổi thành công. Bạn nhận được " + soLuongItem + " Thỏi vàng.");
+                   
+                    break;
+                case GIVE_IT:
+                    String name = text[0];
+                    int id = Integer.parseInt(text[1]);
+                    int op = Integer.parseInt(text[2]);
+                    int pr = Integer.parseInt(text[3]);
+                    int q = Integer.parseInt(text[4]);
+
+                    if (Client.gI().getPlayer(name) != null) {
+                        Item item = ItemService.gI().createNewItem(((short) id));
+                        List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop((short) id);
+                        if (!ops.isEmpty()) {
+                            item.itemOptions = ops;
+                        }
+                        item.quantity = q;
+                        item.itemOptions.add(new Item.ItemOption(op, pr));
+                        InventoryService.gI().addItemBag(Client.gI().getPlayer(name), item);
+                        InventoryService.gI().sendItemBags(Client.gI().getPlayer(name));
+                        Service.gI().sendThongBao(Client.gI().getPlayer(name), "Nhận " + item.template.name + " từ " + player.name);
+
+                    } else {
+                        Service.gI().sendThongBao(player, " không online");
+                    }
+                    break;
+                case GET_IT:
+                    id = Integer.parseInt(text[0]);
+                    op = Integer.parseInt(text[1]);
+                    pr = Integer.parseInt(text[2]);
+                    q = Integer.parseInt(text[3]);
+
+                    if (player.isAdmin()) {
+                        Item item = ItemService.gI().createNewItem(((short) id));
+                        List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop((short) id);
+                        if (!ops.isEmpty()) {
+                            item.itemOptions = ops;
+                        }
+                        item.quantity = q;
+                        item.itemOptions.add(new Item.ItemOption(op, pr));
+                        InventoryService.gI().addItemBag(player, item);
+                        InventoryService.gI().sendItemBags(player);
+                        Service.gI().sendThongBao(player, "Nhận " + item.template.name + " !");
+
+                    } else {
+                        Service.gI().sendThongBao(player, "Không đủ quyền hạn!");
+                    }
+                    break;
+                case CHANGE_PASSWORD:
+                    Service.gI().changePassword(player, text[0], text[1], text[2]);
+                    break;
+                case GIFT_CODE:
+                    GiftCodeService.gI().giftCode(player, text[0]);
+                    break;
+                case FIND_PLAYER:
+                    Player pl = Client.gI().getPlayer(text[0]);
+                    if (pl != null) {
+                        NpcService.gI().createMenuConMeo(player, ConstNpc.MENU_FIND_PLAYER, -1, "Ngài muốn..?",
+                                new String[]{"Đi tới\n" + pl.name, "Gọi " + pl.name + "\ntới đây", "Đổi tên", "Ban", "Kick"},
+                                pl);
+                    } else {
+                        Service.gI().sendThongBao(player, "Người chơi không tồn tại hoặc đang offline");
+                    }
+                    break;
+                case CHANGE_NAME: {
+                    Player plChanged = (Player) PLAYER_ID_OBJECT.get((int) player.id);
+                    if (plChanged != null) {
+                        if (PlayerDAO.usernameExists(text[0])) {
+                            Service.gI().sendThongBao(player, "Tên nhân vật đã tồn tại");
+                        } else {
+                            plChanged.name = text[0];
+                            SqlFetcher.executeUpdate("update player set name = ? where id = ?", plChanged.name, plChanged.id);
+                            Service.gI().player(plChanged);
+                            Service.gI().Send_Caitrang(plChanged);
+                            Service.gI().sendFlagBag(plChanged);
+                            Zone zone = plChanged.zone;
+                            ChangeMapService.gI().changeMap(plChanged, zone, plChanged.location.x, plChanged.location.y);
+                            Service.gI().sendThongBao(plChanged, "Chúc mừng bạn đã có cái tên mới đẹp đẽ hơn tên ban đầu");
+                            Service.gI().sendThongBao(player, "Đổi tên người chơi thành công");
+                        }
+                    }
+                }
+                break;
+                case CHANGE_NAME_BY_ITEM: {
+                    if (player != null) {
+                        if (PlayerDAO.usernameExists(text[0])) {
+                            Service.gI().sendThongBao(player, "Tên nhân vật đã tồn tại");
+                            createFormChangeNameByItem(player);
+                        } else if (Util.haveSpecialCharacter(text[0])) {
+                            Service.gI().sendThongBaoOK(player, "Tên nhân vật không được chứa ký tự đặc biệt");
+                        } else if (text[0].length() < 5) {
+                            Service.gI().sendThongBaoOK(player, "Tên nhân vật quá ngắn");
+                        } else if (text[0].length() > 10) {
+                            Service.gI().sendThongBaoOK(player, "Tên nhân vật chỉ đồng ý các ký tự a-z, 0-9 và chiều dài từ 5 đến 10 ký tự");
+                        } else {
+                            Item theDoiTen = InventoryService.gI().findItem(player.inventory.itemsBag, 2006);
+                            if (theDoiTen == null) {
+                                Service.gI().sendThongBao(player, "Không tìm thấy thẻ đổi tên");
+                            } else {
+                                InventoryService.gI().subQuantityItemsBag(player, theDoiTen, 1);
+                                player.name = text[0].toLowerCase();
+                                SqlFetcher.executeUpdate("update player set name = ? where id = ?", player.name, player.id);
+                                Service.gI().player(player);
+                                Service.gI().Send_Caitrang(player);
+                                Service.gI().sendFlagBag(player);
+                                Zone zone = player.zone;
+                                ChangeMapService.gI().changeMap(player, zone, player.location.x, player.location.y);
+                                Service.gI().sendThongBao(player, "Chúc mừng bạn đã có cái tên mới đẹp đẽ hơn tên ban đầu");
+                            }
+                        }
+                    }
+                }
+                break;
+                case CHOOSE_LEVEL_BDKB:
+                    int level = Integer.parseInt(text[0]);
+                    if (level >= 1 && level <= 110) {
+                        Npc npc = NpcManager.getByIdAndMap(ConstNpc.QUY_LAO_KAME, player.zone.map.mapId);
+                        if (npc != null) {
+                            npc.createOtherMenu(player, ConstNpc.MENU_ACCEPT_GO_TO_BDKB,
+                                    "Con có chắc muốn đến\nhang kho báu cấp độ " + level + " ?",
+                                    new String[]{"Đồng ý", "Từ chối"}, level);
+                        }
+                    } else {
+                        Service.gI().sendThongBao(player, "Không thể thực hiện");
+                    }
+
+                    break;
+                case CHOOSE_LEVEL_KGHD:
+                    level = Integer.parseInt(text[0]);
+                    if (level >= 1 && level <= 110) {
+                        Npc npc = NpcManager.getByIdAndMap(ConstNpc.MR_POPO, player.zone.map.mapId);
+                        if (npc != null) {
+                            npc.createOtherMenu(player, 2,
+                                    "Cậu có chắc muốn đến\nDestron Gas cấp độ " + level + " ?",
+                                    new String[]{"Đồng ý", "Từ chối"}, level);
+                        }
+                    }
+                    break;
+                case CHOOSE_LEVEL_CDRD:
+                    level = Integer.parseInt(text[0]);
+                    if (level >= 1 && level <= 110) {
+                        Npc npc = NpcManager.getByIdAndMap(ConstNpc.THAN_VU_TRU, player.zone.map.mapId);
+                        if (npc != null) {
+                            npc.createOtherMenu(player, 3,
+                                    "Con có chắc muốn đến\ncon đường rắn độc cấp độ " + level + " ?",
+                                    new String[]{"Đồng ý", "Từ chối"}, level);
+                        }
+                    }
+                    break;
+                case MA_BAO_VE:
+                    int mbv = Integer.parseInt(text[0]);
+                    int nmbv = Integer.parseInt(text[1]);
+                    int rembv = Integer.parseInt(text[2]);
+                    if ((mbv + "").length() != 6 || (nmbv + "").length() != 6 || (rembv + "").length() != 6) {
+                        Service.gI().sendThongBao(player, "Trêu bố mày à?");
+                    } else if (player.mbv == 0) {
+                        Service.gI().sendThongBao(player, "Bạn chưa cài mã bảo vệ!");
+                    } else if (player.mbv != mbv) {
+                        Service.gI().sendThongBao(player, "Mã bảo vệ không đúng");
+                    } else if (nmbv != rembv) {
+                        Service.gI().sendThongBao(player, "Mã bảo vệ không trùng khớp");
+                    } else {
+                        player.mbv = nmbv;
+                        Service.gI().sendThongBao(player, "Đổi mã bảo vệ thành công!");
+                    }
+                    break;
+                case SELL_THOIVANG:
+                    int slthoivang = Math.abs(Integer.parseInt(text[0]));
+                    ShopService.gI().sellThoiVang(player, slthoivang);
+                    break;
+                case TANG_NGOC_HONG:
+                    pl = Client.gI().getPlayer(text[0]);
+                    int numruby = Integer.parseInt((text[1]));
+                    if (pl != null) {
+                        if (numruby > 0 && player.inventory.ruby >= numruby) {
+                            Item item = InventoryService.gI().findItemBag(player, 2002);
+                            player.inventory.subGem(numruby);
+                            PlayerService.gI().sendInfoHpMpMoney(player);
+                            pl.inventory.ruby += numruby;
+                            PlayerService.gI().sendInfoHpMpMoney(pl);
+                            Service.gI().sendThongBao(player, "Tặng ngọc thành công");
+                            Service.gI().sendThongBao(pl,
+                                    "Bạn được " + player.name + " tặng " + numruby + " ngọc xanh");
+                            InventoryService.gI().subQuantityItemsBag(player, item, 1);
+                            InventoryService.gI().sendItemBags(player);
+                        } else {
+                            Service.gI().sendThongBao(player, "Không đủ ngọc xanh để tặng");
+                        }
+                    } else {
+                        Service.gI().sendThongBao(player, "Người chơi không tồn tại hoặc đang offline");
+                    }
+                    break;
+                case CLAN:
+                    Clan clan = player.clan;
+                    if (clan != null) {
+                        ClanMember cm = clan.getClanMember((int) player.id);
+                        if (clan.isLeader(player)) {
+                            if (clan.canUpdateClan(player)) {
+                                String tenvt = text[0];
+                                if (!Util.haveSpecialCharacter(tenvt) && tenvt.length() > 1 && tenvt.length() < 5) {
+                                    clan.name2 = tenvt;
+                                    clan.update();
+                                    Service.gI().sendThongBao(player, "[" + tenvt + "] OK");
+                                } else {
+                                    Service.gI().sendThongBaoOK(player, "Chỉ chấp nhận các ký tự a-z, 0-9 và chiều dài từ 2 đến 4 ký tự");
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case DISSOLUTION_CLAN:
+                    String xacNhan = text[0];
+                    if (xacNhan.equalsIgnoreCase("OK")) {
+                        clan = player.clan;
+                        if (clan.isLeader(player)) {
+                            clan.delete(clan.id);
+                            GameData.CLANS.remove(clan);
+                            player.clan = null;
+                            player.clanMember = null;
+                            ClanService.gI().sendMyClan(player);
+                            ClanService.gI().sendClanId(player);
+                            Service.gI().sendThongBao(player, "Bang hội đã giải tán thành công.");
+                        }
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public void createForm(Player pl, int typeInput, String title, SubInput... subInputs) {
+        pl.idMark.setTypeInput(typeInput);
+        Message msg = null;
+        try {
+            msg = new Message(-125);
+            msg.writer().writeUTF(title);
+            msg.writer().writeByte(subInputs.length);
+            for (SubInput si : subInputs) {
+                msg.writer().writeUTF(si.name);
+                msg.writer().writeByte(si.typeInput);
+            }
+            pl.sendMessage(msg);
+        } catch (Exception e) {
+        } finally {
+            if (msg != null) {
+                msg.cleanup();
+            }
+        }
+    }
+
+    public void createForm(ISession session, int typeInput, String title, SubInput... subInputs) {
+        Message msg = null;
+        try {
+            msg = new Message(-125);
+            msg.writer().writeUTF(title);
+            msg.writer().writeByte(subInputs.length);
+            for (SubInput si : subInputs) {
+                msg.writer().writeUTF(si.name);
+                msg.writer().writeByte(si.typeInput);
+            }
+            session.sendMessage(msg);
+        } catch (Exception e) {
+        } finally {
+            if (msg != null) {
+                msg.cleanup();
+            }
+        }
+    }
+
+    public void createFormChangePassword(Player pl) {
+        createForm(pl, CHANGE_PASSWORD, "Đổi mật khẩu", new SubInput("Mật khẩu cũ", PASSWORD),
+                new SubInput("Mật khẩu mới", PASSWORD),
+                new SubInput("Nhập lại mật khẩu mới", PASSWORD));
+    }
+
+    public void createFormGiveItem(Player pl) {
+        createForm(pl, GIVE_IT, "Tặng vật phẩm", new SubInput("Tên", ANY), new SubInput("Id Item", ANY), new SubInput("ID OPTION", ANY), new SubInput("PARAM", ANY), new SubInput("Số lượng", ANY));
+    }
+
+    public void createFormGetItem(Player pl) {
+        createForm(pl, GET_IT, "Get vật phẩm", new SubInput("Id Item", ANY), new SubInput("ID OPTION", ANY), new SubInput("PARAM", ANY), new SubInput("Số lượng", ANY));
+    }
+
+    public void createFormGiftCode(Player pl) {
+        createForm(pl, GIFT_CODE, "Giftcode", new SubInput("Gift-code", ANY));
+    }
+
+    public void createFormMBV(Player pl) {
+        createForm(pl, MA_BAO_VE, "Đồ ngu! Đồ ăn hại! Cút mẹ mày đi!", new SubInput("Nhập Mã Bảo Vệ Đã Quên", NUMERIC), new SubInput("Nhập Mã Bảo Vệ Mới", NUMERIC), new SubInput("Nhập Lại Mã Bảo Vệ Mới", NUMERIC));
+    }
+
+    public void createFormBangHoi(Player pl) {
+        createForm(pl, CLAN, "Nhập tên viết tắt bang hội", new SubInput("Tên viết tắt từ 2 đến 4 kí tự", ANY));
+    }
+
+    public void createFormFindPlayer(Player pl) {
+        createForm(pl, FIND_PLAYER, "Tìm kiếm người chơi", new SubInput("Tên người chơi", ANY));
+    }
+
+    public void createFormNapThe(Player pl, byte loaiThe) {
+        pl.idMark.setLoaiThe(loaiThe);
+        createForm(pl, NAP_THE, "Nạp thẻ", new SubInput("Mã thẻ", ANY), new SubInput("Seri", ANY));
+    }
+
+    public void createFormTangRuby(Player pl) {
+        createForm(pl, TANG_NGOC_HONG, "Tặng ngọc", new SubInput("Tên nhân vật", ANY),
+                new SubInput("Số Hồng Ngọc Muốn Tặng", NUMERIC));
+    }
+
+    public void createFormTradeGold(Player pl) {
+        createForm(pl, TRADE_GOLD, "Tỉ lệ quy đổi: 1.000 vnđ = 2 TV \n Số dư hiện tại: " + Functions.toVnShort(pl.getSession().vnd), new SubInput("Số lượng", NUMERIC));
+    }
+
+    public void createFormChangeName(Player pl, Player plChanged) {
+        PLAYER_ID_OBJECT.put((int) pl.id, plChanged);
+        createForm(pl, CHANGE_NAME, "Đổi tên " + plChanged.name, new SubInput("Tên mới", ANY));
+    }
+
+    public void createFormChangeNameByItem(Player pl) {
+        createForm(pl, CHANGE_NAME_BY_ITEM, "Đổi tên " + pl.name, new SubInput("Tên mới", ANY));
+    }
+
+    public void createFormChooseLevelBDKB(Player pl) {
+        createForm(pl, CHOOSE_LEVEL_BDKB, "Hãy chọn cấp độ hang kho báu từ 1-110", new SubInput("Cấp độ", NUMERIC));
+    }
+
+    public void createFormChooseLevelCDRD(Player pl) {
+        createForm(pl, CHOOSE_LEVEL_CDRD, "Hãy chọn cấp độ từ 1-110", new SubInput("Cấp độ", NUMERIC));
+    }
+
+    public void createFormChooseLevelKGHD(Player pl) {
+        createForm(pl, CHOOSE_LEVEL_KGHD, "Hãy chọn cấp độ từ 1-110", new SubInput("Cấp độ", NUMERIC));
+    }
+
+    public void createFormSellThoiVang(Player pl) {
+        createForm(pl, SELL_THOIVANG, "Bạn muốn bán bao nhiêu [Thỏi vàng] ?", new SubInput("Số lượng", NUMERIC));
+    }
+
+    public void createFormGiaiTanBangHoi(Player pl) {
+        createForm(pl, DISSOLUTION_CLAN, "Nhập OK để xác nhận giải tán bang hội.", new SubInput("", ANY));
+    }
+
+    public static class SubInput {
+
+        private String name;
+        private byte typeInput;
+
+        public SubInput(String name, byte typeInput) {
+            this.name = name;
+            this.typeInput = typeInput;
+        }
+    }
+
+}
