@@ -36,6 +36,7 @@ public class DragonBoy {
     public static int EVENT_SERVER = 0;
     public static boolean isRunning;
     private static DragonBoy instance;
+
     public static DragonBoy gI() {
         if (instance == null) {
             instance = new DragonBoy();
@@ -45,12 +46,12 @@ public class DragonBoy {
 
     public static void main(String[] args) {
         try {
-           // NLogger.logInformation("Conne");
+            // NLogger.logInformation("Conne");
 
             DragonBoy.gI().init();
             DragonBoy.gI().run();
-        }catch (Throwable  e) {
-            NLogger.logCritical( e, "Error initializing app context");
+        } catch (Throwable e) {
+            NLogger.logCritical(e, "Error initializing app context");
             System.exit(0);
         }
 
@@ -63,7 +64,7 @@ public class DragonBoy {
         GameData.gI().load();
         NpcFactory.init();
         HistoryTransactionDAO.deleteHistory();
-        
+
     }
 
     public void run() throws Exception {
@@ -92,37 +93,36 @@ public class DragonBoy {
     }
 
     public void activeServerSocket() throws Exception {
-            Network.gI().init().setAcceptHandler(new ISessionAcceptHandler() {
-                        @Override
-                        public void sessionInit(ISession is) {
-                            if (!canConnectWithIp(is.getIP())) {
-                                is.disconnect();
-                                return;
-                            }
-                            is.setMessageHandler(Controller.gI())
-                                    .setSendCollect(new MessageSendCollect())
-                                    .setKeyHandler(new MyKeyHandler())
-                                    .startCollect();
-                        }
+        Network.gI().init().setAcceptHandler(new ISessionAcceptHandler() {
+            @Override
+            public void sessionInit(ISession is) {
+                if (!canConnectWithIp(is.getIP())) {
+                    is.disconnect();
+                    return;
+                }
+                is.setMessageHandler(Controller.gI())
+                        .setSendCollect(new MessageSendCollect())
+                        .setKeyHandler(new MyKeyHandler())
+                        .startCollect();
+            }
 
-                        @Override
-                        public void sessionDisconnect(ISession session) {
-                            MySession mySession = (MySession) session;
-                            if (mySession.player == null) {
-                                return;
-                            }
-                            NLogger.logInformation(mySession.player.name + " left the game");
-
-                            Client.gI().kickSession((MySession) session);
-                            disconnect((MySession) session);
-
-                        }
-                    }).setTypeSessioClone(MySession.class)
-                    .setDoSomeThingWhenClose(() -> {
-                        NLogger.logWarning("SERVER CLOSE");
-                        System.exit(0);
-                    })
-                    .start(PORT);
+            @Override
+            public void sessionDisconnect(ISession session) {
+                MySession mySession = (MySession) session;
+                if (mySession.player != null) {
+                    NLogger.logInformation(mySession.player.name + " left the game");
+                    Client.gI().kickSession(mySession);
+                    return;
+                }
+                // chỉ giảm khi chưa vào game
+                disconnect(mySession);
+            }
+        }).setTypeSessioClone(MySession.class)
+                .setDoSomeThingWhenClose(() -> {
+                    NLogger.logWarning("SERVER CLOSE");
+                    System.exit(0);
+                })
+                .start(PORT);
 
     }
 
@@ -157,14 +157,23 @@ public class DragonBoy {
 
     public void close() {
         isRunning = false;
-        try { ClanService.gI().close(); }
-        catch (Exception e) { NLogger.logWarning("Error to save clan!"); }
+        try {
+            ClanService.gI().close();
+        } catch (Exception e) {
+            NLogger.logWarning("Error to save clan!");
+        }
 
-        try { ConsignShopManager.gI().save(); }
-        catch (Exception e) { NLogger.logWarning("Error to save consign shop!"); }
+        try {
+            ConsignShopManager.gI().save();
+        } catch (Exception e) {
+            NLogger.logWarning("Error to save consign shop!");
+        }
 
-        try { Client.gI().close(); }
-        catch (Exception e) { NLogger.logWarning("Error to close clients!"); }
+        try {
+            Client.gI().close();
+        } catch (Exception e) {
+            NLogger.logWarning("Error to close clients!");
+        }
 
         NLogger.logInformation("SUCCESSFULLY MAINTENANCE!");
         System.exit(0);
