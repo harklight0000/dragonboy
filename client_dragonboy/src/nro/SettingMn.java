@@ -1,8 +1,8 @@
 package nro;
 
-public final class SoundMn {
+public final class SettingMn {
    public static boolean a = false;
-   private static SoundMn l;
+   private static SettingMn l;
    public static float b = 0.5F;
    public static int c = 30;
    public static int d = 31;
@@ -14,21 +14,21 @@ public final class SoundMn {
    public static int j = 37;
    public static int k = 38;
 
-   public static SoundMn stopAll() {
+   public static SettingMn stopAll() {
       if (l == null) {
-         l = new SoundMn();
+         l = new SettingMn();
       }
 
       return l;
    }
 
    public final void b() {
-      if (Char.cU) {
+      if (Char.isEnableSpecialAura) {
          Rms.saveRMSInt("isPaintAura", 0);
-         Char.cU = false;
+         Char.isEnableSpecialAura = false;
       } else {
          Rms.saveRMSInt("isPaintAura", 1);
-         Char.cU = true;
+         Char.isEnableSpecialAura = true;
       }
 
       g();
@@ -59,7 +59,7 @@ public final class SoundMn {
    }
 
    public final void d() {
-      if (main.GameCanvas.a) {
+      if (main.GameCanvas.isLowGraphic) {
          Rms.saveRMSInt("lowGraphic", 0);
          main.GameCanvas.startOK(mResources.cL, 8885, (Object)null);
       } else {
@@ -71,12 +71,12 @@ public final class SoundMn {
    }
 
    public final void e() {
-      if (Char.cV) {
+      if (Char.isEnablePowerAura) {
          Rms.saveRMSInt("isPaintAura2", 0);
-         Char.cV = false;
+         Char.isEnablePowerAura = false;
       } else {
          Rms.saveRMSInt("isPaintAura2", 1);
-         Char.cV = true;
+         Char.isEnablePowerAura = true;
       }
 
       g();
@@ -108,17 +108,25 @@ public final class SoundMn {
 
    }
 
-   public static void g() {
-      String var0 = "[x]   ";
-      String var1 = "[  ]   ";
-      String var2 = GameScreen.aN == 0 ? var1 + mResources.F : var0 + mResources.G;
-      if (!main.GameCanvas.isTouch) {
-         var2 = !GameScreen.bU ? var1 + mResources.bW : var0 + mResources.bW;
+  public static void g() {
+      String iconOn = "[x]   "; 
+      String iconOff = "[  ]   "; 
+      
+      String strAnalogOrChat;
+      if (main.GameCanvas.isTouch) {
+          strAnalogOrChat = (GameScreen.aN == 1) ? iconOn + mResources.G : iconOff + mResources.G;
+      } else {
+          strAnalogOrChat = (GameScreen.bU) ? iconOn + mResources.bW : iconOff + mResources.bW;
       }
 
-      Panel.G = new String[]{Char.cU ? var1 + mResources.ca : var0 + mResources.ca, Char.cV ? var1 + mResources.cb : var0 + mResources.cb, main.GameCanvas.ai ? var0 + mResources.fz : var1 + mResources.fz, main.GameCanvas.a ? var0 + mResources.z : var1 + mResources.z, var2};
+      Panel.G = new String[]{
+          Char.isEnableSpecialAura ? iconOn + mResources.ca : iconOff + mResources.ca,
+          Char.isEnablePowerAura ? iconOn + mResources.cb : iconOff + mResources.cb, 
+          main.GameCanvas.isEnableSound ? iconOn + mResources.fz : iconOff + mResources.fz, 
+          main.GameCanvas.isLowGraphic ? iconOn + mResources.z : iconOff + mResources.z,   
+          strAnalogOrChat 
+      };
    }
-
    public static void h() {
       Session_ME2.Session_ME().close();
       main.GameCanvas.panel.A();

@@ -19,7 +19,7 @@ import services.ItemService;
 import services.Service;
 import services.TaskService;
 import player.skill.Skill;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.SkillUtil;
 import utils.Util;
 
@@ -564,7 +564,7 @@ public class NPoint {
                     }
                 }
             } catch (Exception e) {
-                NLogger.logWarning("Lỗi get giáp tập luyện " + this.player.name );
+                MyLogger.logWarning("Lỗi get giáp tập luyện " + this.player.name );
             }
         }
     }

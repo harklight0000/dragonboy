@@ -220,7 +220,7 @@ public final class SmallImage {
             }
          }
 
-         if (var0 > 200 && main.GameCanvas.a) {
+         if (var0 > 200 && main.GameCanvas.isLowGraphic) {
             c = new Small[f];
          }
       }

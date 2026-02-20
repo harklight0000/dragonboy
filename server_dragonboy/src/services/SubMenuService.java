@@ -1,7 +1,7 @@
 package services;
 
 import consts.ConstNpc;
-import logger.NLogger;
+import logger.MyLogger;
 import services.map.NpcService;
 import network.Message;
 import player.Player;
@@ -119,7 +119,7 @@ public class SubMenuService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

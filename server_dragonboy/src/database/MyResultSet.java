@@ -2,7 +2,7 @@ package database;
 
 import java.sql.Timestamp;
 
-public interface InMemoryResultSet {
+public interface MyResultSet {
     byte getByte(final int p0) throws Exception;
 
     byte getByte(final String p0) throws Exception;

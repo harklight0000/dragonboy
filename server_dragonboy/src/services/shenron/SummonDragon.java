@@ -14,7 +14,7 @@ import services.PlayerService;
 import server.Maintenance;
 import services.ItemService;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.util.HashMap;
@@ -106,7 +106,7 @@ public class SummonDragon {
                     }
                     Thread.sleep(1000);
                 } catch (Exception e) {
-                    NLogger.logError(e);
+                    MyLogger.logError(e);
                 }
             }
         });

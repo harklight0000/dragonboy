@@ -13,7 +13,7 @@ import shop.Shop;
 import player.skill.NClass;
 import task.*;
 import config.Config;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.io.*;
 import java.sql.Connection;
@@ -171,7 +171,7 @@ public final class GameData {
                             try {
                                 zone.update();
                             } catch (Exception e) {
-                                NLogger.logWarning( "Lỗi khi cập nhật zone: " + e.getMessage());
+                                MyLogger.logWarning( "Lỗi khi cập nhật zone: " + e.getMessage());
                             }
                         }
                     }
@@ -182,10 +182,10 @@ public final class GameData {
                     }
                 }
             } catch (InterruptedException e) {
-                NLogger.logWarning( "Thread cập nhật map bị gián đoạn: " + e.getMessage());
+                MyLogger.logWarning( "Thread cập nhật map bị gián đoạn: " + e.getMessage());
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                NLogger.logWarning("Lỗi không xác định trong thread cập nhật map: " + e.getMessage());
+                MyLogger.logWarning("Lỗi không xác định trong thread cập nhật map: " + e.getMessage());
             }
         }, "Update Maps").start();
     }
@@ -195,10 +195,10 @@ public final class GameData {
         try (Connection conn = SqlFetcher.getConnection()) {
             new GameDataDAO().loadAll(this, conn);
         } catch (Throwable e) {
-            NLogger.logCritical(e, "Fail to load game data.");
+            MyLogger.logError(e,"Fail to load game data.");
             throw new ExceptionInInitializerError();
         }
-        NLogger.logInformation("Loaded all game data.(took "+ (System.currentTimeMillis() - st) +"ms)");
+        MyLogger.logInformation("Loaded all game data.(took "+ (System.currentTimeMillis() - st) +"ms)");
     }
 
 
@@ -234,7 +234,7 @@ public final class GameData {
                 }
             }
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
         return tileIndexTileType;
     }

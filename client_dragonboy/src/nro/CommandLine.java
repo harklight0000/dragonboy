@@ -85,7 +85,7 @@ public final class CommandLine {
    public final void performAction() {
       main.GameCanvas.k();
       if (this.isPlaySoundButton && (this.caption != null && !this.caption.equals("") && !this.caption.equals(mResources.cD) || this.g != null)) {
-         SoundMn.stopAll();
+         SettingMn.stopAll();
       }
 
       if (this.e > 0) {

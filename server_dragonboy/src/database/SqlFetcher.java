@@ -3,7 +3,7 @@ package database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import config.Config;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,9 +34,9 @@ public class SqlFetcher {
             cfg.setInitializationFailTimeout(0);
             tmp = new HikariDataSource(cfg);
             try (Connection c = tmp.getConnection()) {}
-            NLogger.logInformation("connected to " + DB_HOST + " " + DB_NAME);
+            MyLogger.logInformation("connected to " + DB_HOST + " " + DB_NAME);
         } catch (Throwable t) {
-            NLogger.logCritical(t, "Fail to connect database");
+            MyLogger.logError(t, "Fail to connect database");
             throw new ExceptionInInitializerError(t);
         } finally {
             ds = tmp;
@@ -73,17 +73,17 @@ public class SqlFetcher {
 //        }
 //    }
 
-    public static InMemoryResultSet executeQuery(final String query, final Object... objs) throws Exception {
+    public static MyResultSet executeQuery(final String query, final Object... objs) throws Exception {
         try (final Connection con = getConnection(); final PreparedStatement ps = con.prepareStatement(query)) {
             for (int i = 0; i < objs.length; ++i) {
                 ps.setObject(i + 1, objs[i]);
             }
             if (SqlFetcher.LOG_QUERY) {
-                NLogger.logWarning("Query executed successfully: " + ps.toString() );
+                MyLogger.logWarning("Query executed successfully: " + ps.toString() );
             }
-            return new InMemoryResultSetImpl(ps.executeQuery());
+            return new MyResultSetImpl(ps.executeQuery());
         } catch (final Exception ex) {
-            NLogger.logWarning( "An error occurred while executing the query: " + query );
+            MyLogger.logWarning( "An error occurred while executing the query: " + query );
             throw ex;
         }
     }
@@ -92,11 +92,11 @@ public class SqlFetcher {
         int rowUpdated = -1;
         try (final Connection con = getConnection(); final PreparedStatement ps = con.prepareStatement(query)) {
             if (SqlFetcher.LOG_QUERY) {
-                NLogger.logWarning( "Query executed successfully: " + ps.toString());
+                MyLogger.logWarning( "Query executed successfully: " + ps.toString());
             }
             rowUpdated = ps.executeUpdate();
         } catch (final Exception e) {
-            NLogger.logWarning( "An error occurred while executing the query: " + query);
+            MyLogger.logWarning( "An error occurred while executing the query: " + query);
             throw e;
         }
         return rowUpdated;
@@ -121,11 +121,11 @@ public class SqlFetcher {
                 ps.setObject(j + 1, objs[j]);
             }
             if (SqlFetcher.LOG_QUERY) {
-                NLogger.logWarning( "Query executed successfully: " + ps.toString() );
+                MyLogger.logWarning( "Query executed successfully: " + ps.toString() );
             }
             return ps.executeUpdate();
         } catch (final Exception ex) {
-            NLogger.logWarning("An error occurred while executing the query: " + query);
+            MyLogger.logWarning("An error occurred while executing the query: " + query);
             throw ex;
         }
     }

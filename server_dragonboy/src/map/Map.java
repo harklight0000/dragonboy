@@ -23,7 +23,7 @@ import npc.NpcFactory;
 import player.Player;
 import server.GameData;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.io.DataInputStream;
@@ -138,7 +138,7 @@ public class Map implements Runnable {
                     try {
                         zone.update();
                     } catch (Exception e) {
-                        NLogger.logError(e, "Lỗi update zone");
+                        MyLogger.logError(e, "Lỗi update zone");
                     }
                 }
                 long timeDo = System.currentTimeMillis() - st;
@@ -146,7 +146,7 @@ public class Map implements Runnable {
                     Thread.sleep(1000 - timeDo);
                 }
             } catch (Exception e) {
-                NLogger.logError(e, "Lỗi update map " + this.mapName);
+                MyLogger.logError(e, "Lỗi update map " + this.mapName);
             }
         }
     }

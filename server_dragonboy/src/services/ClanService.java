@@ -17,7 +17,7 @@ import org.json.simple.JSONObject;
 import player.Player;
 import server.Client;
 import server.GameData;
-import logger.NLogger;
+import logger.MyLogger;
 import services.player.InventoryService;
 import utils.TimeUtil;
 import utils.Util;
@@ -683,7 +683,7 @@ public class ClanService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e, "Lỗi send my clan " + player.clan.name + " - " + player.clan.id);
+            MyLogger.logError(e, "Lỗi send my clan " + player.clan.name + " - " + player.clan.id);
         }
     }
 

@@ -286,7 +286,7 @@ public final class TileMap {
    }
 
    public static final void b(mGraphics var0) {
-      if (!main.GameCanvas.a) {
+      if (!main.GameCanvas.isLowGraphic) {
          try {
             for(int var1 = GameScreen.o; var1 < GameScreen.q; ++var1) {
                for(int var2 = GameScreen.p; var2 < GameScreen.r; ++var2) {

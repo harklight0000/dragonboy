@@ -11,7 +11,7 @@ import player.Enemy;
 import player.Friend;
 import player.Player;
 import server.Client;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.io.IOException;
@@ -144,7 +144,7 @@ public class FriendAndEnemyService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -169,7 +169,7 @@ public class FriendAndEnemyService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

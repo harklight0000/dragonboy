@@ -2,7 +2,7 @@ package utils;
 
 import boss.BossManager.BossManager;
 import item.Item;
-import logger.NLogger;
+import logger.MyLogger;
 import map.ItemMap;
 import map.Zone;
 import mob.Mob;
@@ -338,7 +338,7 @@ public class Util {
             try {
                 task.run();
             } catch (Exception e) {
-                NLogger.logWarning(e.getMessage() );
+                MyLogger.logWarning(e.getMessage() );
             } finally {
                 executor.shutdown();
             }

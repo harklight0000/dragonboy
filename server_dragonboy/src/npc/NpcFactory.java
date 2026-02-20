@@ -25,7 +25,7 @@ import services.player.InventoryService;
 import services.shenron.Shenron_Service;
 import services.shenron.SummonDragon;
 import services.shenron.SummonDragonNamek;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class NpcFactory {
                 };
             };
         } catch (Exception e) {
-            NLogger.logError(
+            MyLogger.logError(
                     e, "error to load npc");
             return null;
         }
@@ -364,7 +364,7 @@ public class NpcFactory {
                             }
                             case 2 -> {
                                 if (player.isAdmin()) {
-                                    NLogger.logInformation(player.name + "set game maintenance!");
+                                    MyLogger.logInformation(player.name + "set game maintenance!");
                                     Maintenance.gI().start(30);
                                 }
                             }

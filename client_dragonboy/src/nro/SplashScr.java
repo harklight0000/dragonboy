@@ -27,15 +27,15 @@ public final class SplashScr extends mScreen {
          }
 
          if (Rms.loadRMSInt("isPlaySound") != -1) {
-            main.GameCanvas.ai = Rms.loadRMSInt("isPlaySound") == 1;
+            main.GameCanvas.isEnableSound = Rms.loadRMSInt("isPlaySound") == 1;
          }
 
-         if (main.GameCanvas.ai) {
-            SoundMn.stopAll();
+         if (main.GameCanvas.isEnableSound) {
+            SettingMn.stopAll();
          }
 
-         SoundMn.stopAll();
-         SoundMn.g();
+         SettingMn.stopAll();
+         SettingMn.g();
          if (Rms.loadRMSInt("svselect") == -1) {
             String[] var1;
             mResources.a(Byte.parseByte((var1 = ResLog.splitString(ServerListScreen.h.trim(), ",", 0))[var1.length - 2]));

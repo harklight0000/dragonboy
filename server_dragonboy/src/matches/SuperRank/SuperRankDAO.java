@@ -6,14 +6,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import player.Player;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.TimeUtil;
 import utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import database.InMemoryResultSet;
+import database.MyResultSet;
 
 public class SuperRankDAO {
 
@@ -21,7 +21,7 @@ public class SuperRankDAO {
 
         List<SuperRankBuilder> list = new ArrayList<>();
         try {
-            InMemoryResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank <= ? AND rank > 0 ORDER BY rank DESC LIMIT ?", Math.max(rank, 10), limit);
+            MyResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank <= ? AND rank > 0 ORDER BY rank DESC LIMIT ?", Math.max(rank, 10), limit);
             while (rs.next()) {
                 list.add(readData(rs));
             }
@@ -30,7 +30,7 @@ public class SuperRankDAO {
         try {
             int rand = random(rank);
             if (rand != -1) {
-                InMemoryResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank = ? LIMIT 1", rand);
+                MyResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank = ? LIMIT 1", rand);
                 if (rs.first()) {
                     list.add(readData(rs));
                 }
@@ -45,7 +45,7 @@ public class SuperRankDAO {
     public static List<SuperRankBuilder> getPlayerListInRank(int rank, int limit) {
         List<SuperRankBuilder> list = new ArrayList<>();
         try {
-            InMemoryResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank > 0 ORDER BY rank ASC LIMIT ?", limit);
+            MyResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank > 0 ORDER BY rank ASC LIMIT ?", limit);
             while (rs.next()) {
                 list.add(readData(rs));
             }
@@ -53,7 +53,7 @@ public class SuperRankDAO {
         }
         try {
             if (rank > 100) {
-                InMemoryResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank > ? AND rank < ? ORDER BY rank ASC LIMIT 4", rank - 3, rank + 2);
+                MyResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE rank > ? AND rank < ? ORDER BY rank ASC LIMIT 4", rank - 3, rank + 2);
                 while (rs.next()) {
                     list.add(readData(rs));
                 }
@@ -81,7 +81,7 @@ public class SuperRankDAO {
         return -1;
     }
 
-    public static SuperRankBuilder readData(InMemoryResultSet rs) throws Exception {
+    public static SuperRankBuilder readData(MyResultSet rs) throws Exception {
 
         SuperRankBuilder superRankbuilder = new SuperRankBuilder();
 
@@ -150,14 +150,14 @@ public class SuperRankDAO {
                 String query = "UPDATE player SET data_inventory = ? WHERE id = ?";
                 SqlFetcher.executeUpdate(query, inventory, player.id);
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
         }
     }
 
     public static void loadData(Player player) {
         try {
-            InMemoryResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE player_id = " + player.id);
+            MyResultSet rs = SqlFetcher.executeQuery("SELECT * FROM super_rank WHERE player_id = " + player.id);
             if (rs.first()) {
                 player.superRank.rank = rs.getInt("rank");
                 player.superRank.lastPKTime = rs.getLong("last_pk_time");
@@ -189,7 +189,7 @@ public class SuperRankDAO {
 
     public static int getRank(int playerId) {
         try {
-            InMemoryResultSet rs = SqlFetcher.executeQuery("SELECT rank FROM super_rank WHERE player_id = " + playerId);
+            MyResultSet rs = SqlFetcher.executeQuery("SELECT rank FROM super_rank WHERE player_id = " + playerId);
             if (rs.first()) {
                 return rs.getInt("rank");
             }
@@ -200,12 +200,12 @@ public class SuperRankDAO {
 
     public static int getCurrentHighestRank() {
         try {
-            InMemoryResultSet rs = SqlFetcher.executeQuery("SELECT rank FROM super_rank ORDER BY rank DESC LIMIT 1");
+            MyResultSet rs = SqlFetcher.executeQuery("SELECT rank FROM super_rank ORDER BY rank DESC LIMIT 1");
             if (rs.first()) {
                 return rs.getInt("rank");
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
         return 0;
     }
@@ -240,7 +240,7 @@ public class SuperRankDAO {
                     historyList.toString());
             //Logger.success("Player Inserted Data_SuperRankDao -> " + player.name + " " + "\n");
         } catch (Exception e) {
-            NLogger.logError(e, "Could not insert SuperRank record for player=" + player.name);
+            MyLogger.logError(e, "Could not insert SuperRank record for player=" + player.name);
         }
     }
 
@@ -274,7 +274,7 @@ public class SuperRankDAO {
                     player.id);
 //            Logger.info("Player Update Data_SuperRankDao -> " + player.name + " " + "\n");
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 }

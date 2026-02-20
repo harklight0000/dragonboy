@@ -109,7 +109,7 @@ public final class nr_k extends Npc implements IActionListener {
          ServerEffect.addServerEffect(98, super.cx + this.g[this.b - 1] - SmallImage.a[this.a][3] / 2, super.cy + this.h[this.b - 1] - SmallImage.a[this.a][4], 1);
          --this.b;
          if (main.GameCanvas.v % 2 == 0) {
-            SoundMn.stopAll();
+            SettingMn.stopAll();
          }
 
          if (this.b == this.c) {

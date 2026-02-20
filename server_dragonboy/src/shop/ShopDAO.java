@@ -5,7 +5,7 @@ import services.ItemService;
 import shop.ItemShop;
 import shop.Shop;
 import shop.TabShop;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,7 +40,7 @@ public class ShopDAO {
             } catch (SQLException ex) {
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
         return list;
     }
@@ -68,7 +68,7 @@ public class ShopDAO {
             } catch (SQLException ex) {
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -104,7 +104,7 @@ public class ShopDAO {
             } catch (SQLException ex) {
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -126,7 +126,7 @@ public class ShopDAO {
             } catch (SQLException ex) {
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 }

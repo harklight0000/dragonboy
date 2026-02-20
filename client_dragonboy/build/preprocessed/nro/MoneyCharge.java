@@ -37,7 +37,7 @@ public final class MoneyCharge extends mScreen implements IActionListener {
 
       this.b.setIputType(0);
       if (!main.GameCanvas.isTouch) {
-         super.cb = this.b.j;
+         super.right = this.b.j;
       }
 
       this.c = new TextField();
@@ -136,13 +136,13 @@ public final class MoneyCharge extends mScreen implements IActionListener {
             this.b.isFocus = false;
             this.c.isFocus = true;
             if (!main.GameCanvas.isTouch) {
-               super.cb = this.c.j;
+               super.right = this.c.j;
             }
          } else if (this.i == 0) {
             this.b.isFocus = true;
             this.c.isFocus = false;
             if (!main.GameCanvas.isTouch) {
-               super.cb = this.b.j;
+               super.right = this.b.j;
             }
          } else {
             this.b.isFocus = false;

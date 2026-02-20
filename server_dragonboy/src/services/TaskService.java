@@ -15,7 +15,7 @@ import services.player.InventoryService;
 import server.Client;
 import server.GameData;
 import server.DragonBoy;
-import logger.NLogger;
+import logger.MyLogger;
 import task.ClanTaskTemplate;
 import task.SideTaskTemplate;
 import task.SubTaskMain;
@@ -84,7 +84,7 @@ public class TaskService {
             }
             player.sendMessage(msg);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();

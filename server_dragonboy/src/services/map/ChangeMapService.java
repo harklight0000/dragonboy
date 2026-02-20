@@ -23,7 +23,7 @@ import services.ItemService;
 import services.Service;
 import services.TaskService;
 import services.func.TransactionService;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.TimeUtil;
 import utils.Util;
 
@@ -96,7 +96,7 @@ public class ChangeMapService {
             }
             pl.sendMessage(msg);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();
@@ -774,7 +774,7 @@ public class ChangeMapService {
                     Service.gI().sendMessAnotherNotMeInMap(player, msg);
                     player.zone = null;
                 } catch (Exception e) {
-                    NLogger.logError(e);
+                    MyLogger.logError(e);
                 } finally {
                     if (msg != null) {
                         msg.cleanup();

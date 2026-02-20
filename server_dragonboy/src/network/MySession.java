@@ -5,7 +5,7 @@ import item.Item;
 import player.Player;
 import server.*;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -139,7 +139,7 @@ public class MySession extends Session {
                         Service.gI().sendThongBao(this.player, this.player.notify);
                         this.player.notify = null;
                     }
-                    NLogger.logInformation(player.name + "[/" + this.ipAddress + "] joined the game");
+                    MyLogger.logInformation(player.name + "[/" + this.ipAddress + "] joined the game");
                 }
             } catch (Exception e) {
                 if (pl != null) {

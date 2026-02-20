@@ -92,7 +92,7 @@ public final class CrackBallScr extends mScreen implements IActionListener {
          this.A = new int[this.j];
          this.B = new int[this.j];
          CrackBallScr var5 = this;
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             for(int var6 = 0; var6 < var5.z.length; ++var6) {
                var5.z[var6] = ResLog.abs(var5.e * ResLog.sin(var5.h) / 1024);
                var5.y[var6] = ResLog.abs(var5.e * ResLog.cos(var5.h) / 1024);
@@ -156,7 +156,7 @@ public final class CrackBallScr extends mScreen implements IActionListener {
          this.n = 0;
          this.g();
          this.switchToMe();
-         SoundMn.stopAll();
+         SettingMn.stopAll();
       }
    }
 
@@ -217,7 +217,7 @@ public final class CrackBallScr extends mScreen implements IActionListener {
 
                   if (this.b[var1].b == this.b[var1].d) {
                      EffecMn.addEff(new Effect(19, this.b[var1].a - 5, this.b[var1].b + 25, 2, 1, -1));
-                     SoundMn.stopAll();
+                     SettingMn.stopAll();
                      this.b[var1].k = true;
                      if (!this.G) {
                         this.G = true;
@@ -254,7 +254,7 @@ public final class CrackBallScr extends mScreen implements IActionListener {
             if (this.u > this.P.length - 1) {
                this.u = this.P.length - 1;
                this.F = true;
-               SoundMn.stopAll();
+               SettingMn.stopAll();
                if (!this.H && this.E - main.GameCanvas.b < 0L) {
                   Service.gI().c((byte)2, (byte)(this.e() + this.f()));
                   this.H = true;
@@ -398,7 +398,7 @@ public final class CrackBallScr extends mScreen implements IActionListener {
 
    private void b(int var1) {
       if (!this.b[var1].k) {
-         SoundMn.stopAll();
+         SettingMn.stopAll();
          long var2 = this.d == 0 ? Char.myCharz().gold : (long)Char.myCharz().Y();
          if (this.e() >= this.n && var2 < (long)(this.t + this.s)) {
             String var4 = mResources.k + " " + (this.d == 0 ? mResources.bC : mResources.bD);
@@ -416,7 +416,7 @@ public final class CrackBallScr extends mScreen implements IActionListener {
          if (this.c < 2) {
             if (this.e() + this.f() > 0) {
                this.c = 2;
-               SoundMn.stopAll();
+               SettingMn.stopAll();
                Char.myCharz().a(GameScreen.u[13], 0);
                this.E = main.GameCanvas.b + (long)ResLog.nextIntRange(2000, 3000);
                return;

@@ -1,7 +1,7 @@
 package server;
 
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.util.concurrent.Executors;
 
@@ -43,7 +43,7 @@ public class Maintenance extends Thread {
     public void startImmediately() {
         if (!isRunning) {
             isRunning = true;
-            NLogger.logWarning( "BEGIN MAINTENANCE\n");
+            MyLogger.logWarning( "BEGIN MAINTENANCE\n");
             DragonBoy.gI().close();
         }
     }
@@ -76,7 +76,7 @@ public class Maintenance extends Thread {
 
                 Service.gI().sendThongBaoAllPlayer("Hệ thống sẽ bảo trì sau " + hourStr + minStr + secStr
                         + "nữa");
-                NLogger.logWarning("Hệ thống sẽ bảo trì sau " + hourStr + minStr + secStr
+                MyLogger.logWarning("Hệ thống sẽ bảo trì sau " + hourStr + minStr + secStr
                         + "nữa\n");
                 if (sec == 0 && this.time > 60) {
                     sec = 60;
@@ -90,7 +90,7 @@ public class Maintenance extends Thread {
                 }
             }
         }
-        NLogger.logWarning( "BEGIN MAINTENANCE\n");
+        MyLogger.logWarning( "BEGIN MAINTENANCE\n");
         DragonBoy.gI().close();
     }
 

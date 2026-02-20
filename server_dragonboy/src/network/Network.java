@@ -4,7 +4,7 @@ import network.inetwork.INetwork;
 import network.inetwork.IServerClose;
 import network.inetwork.ISession;
 import network.inetwork.ISessionAcceptHandler;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -41,7 +41,7 @@ public class Network implements INetwork, Runnable {
         try {
             this.selector = Selector.open();
         } catch (IOException ex) {
-            NLogger.logWarning(ex.toString());
+            MyLogger.logWarning(ex.toString());
         }
         this.loopServer = new Thread((Runnable) this, "Network");
         return this;
@@ -65,12 +65,12 @@ public class Network implements INetwork, Runnable {
             this.serverSocketChannel.socket().bind(new InetSocketAddress(port));
             this.serverSocketChannel.register(this.selector, 16);
         } catch (Exception ex) {
-            NLogger.logCritical(ex, "Error initializing server at port " + port );
+            MyLogger.logError(ex,  "Error initializing server at port " + port );
             throw new Exception();
         }
         this.start = true;
         this.loopServer.start();
-        NLogger.logInformation("Server listening on port " + this.port + "\n");
+        MyLogger.logInformation("Server listening on port " + this.port + "\n");
         return this;
     }
 
@@ -121,7 +121,7 @@ public class Network implements INetwork, Runnable {
                 this.selector.selectedKeys().clear();
             } catch (IOException iOException) {
             } catch (Exception ex2) {
-                NLogger.logWarning(ex2.toString());
+                MyLogger.logWarning(ex2.toString());
             }
         }
     }

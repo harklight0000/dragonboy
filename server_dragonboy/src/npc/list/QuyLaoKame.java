@@ -3,212 +3,196 @@ package npc.list;
 import services.dungeon.TreasureUnderSeaService;
 import dungeon.TreasureUnderSea;
 import consts.ConstNpc;
+import consts.ConstMap;
 import item.Item;
 import services.map.ChangeMapService;
 import services.map.NpcService;
 import npc.Npc;
 import player.Player;
 import services.player.InventoryService;
-import services.PlayerService;
 import services.ItemService;
 import services.RewardService;
 import services.Service;
 import services.TaskService;
 import services.func.Input;
 import shop.ShopService;
-import player.skill.Skill;
-import logger.NLogger;
 import utils.SkillUtil;
 import utils.TimeUtil;
 import utils.Util;
-
 import java.util.ArrayList;
-
+import java.util.List;
 import static npc.NpcFactory.PLAYERID_OBJECT;
+import player.skill.LearnSkillService;
 
 public class QuyLaoKame extends Npc {
+
+    private static final int ID_RUA_CON = 874;
+    private static final int MENU_CHOOSE_ACTION = 0;
+    private static final int MENU_GIAO_RUA_CON = 1;
+    private static final int MENU_XAC_NHAN_HUY_HOC = 13;
+    private static final int MENU_XAC_NHAN_GIAI_TAN = 4;
+    private static final int TIME_UNIT_FOR_GEM_CALC = 600_000;
+    private static final int Y_LANDING_CLAN_AREA = 432;
+
     public QuyLaoKame(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         super(mapId, status, cx, cy, tempId, avartar);
     }
 
     @Override
     public void openBaseMenu(Player player) {
-        Item ruacon = InventoryService.gI().findItemBag(player, 874);
-        if (canOpenNpc(player)) {
-            ArrayList<String> menu = new ArrayList<>();
-            if (!player.canReward) {
-                menu.add("Nói\nchuyện");
-                if (ruacon != null && ruacon.quantity >= 1) {
-                    menu.add("Giao\nRùa con");
-                }
-            } else {
-                menu.add("Giao\nLân con");
-            }
-            String[] menus = menu.toArray(String[]::new);
-            if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                this.createOtherMenu(player, ConstNpc.BASE_MENU, "Con muốn hỏi gì nào?", menus);
-            }
+        if (!canOpenNpc(player) || TaskService.gI().checkDoneTaskTalkNpc(player, this)) return;
+
+        if (player.canReward) {
+            this.createOtherMenu(player, ConstNpc.BASE_MENU, "Con muốn hỏi gì nào?", "Giao\nLân con");
+            return;
         }
+
+        List<String> menu = new ArrayList<>();
+        menu.add("Nói\nchuyện");
+        
+        Item ruaCon = InventoryService.gI().findItemBag(player, ID_RUA_CON);
+        if (ruaCon != null && ruaCon.quantity >= 1) {
+            menu.add("Giao\nRùa con");
+        }
+
+        this.createOtherMenu(player, ConstNpc.BASE_MENU, "Con muốn hỏi gì nào?", menu.toArray(String[]::new));
     }
 
     @Override
     public void confirmMenu(Player player, int select) {
         if (!canOpenNpc(player)) return;
+
         if (player.canReward) {
             RewardService.gI().rewardLancon(player);
             return;
         }
 
-        switch (player.idMark.getIndexMenu()) {
-            case ConstNpc.BASE_MENU:
-                if (select == 0) {
-                    if (player.LearnSkill.Time != -1 && player.LearnSkill.Time <= System.currentTimeMillis()) {
-                        player.LearnSkill.Time = -1;
-                        try {
-                            var curSkill = SkillUtil.createSkill(SkillUtil.getTempSkillSkillByItemID(player.LearnSkill.ItemTemplateSkillId),
-                                    SkillUtil.getSkillByItemID(player, player.LearnSkill.ItemTemplateSkillId).point);
-                            player.BoughtSkill.add((int) player.LearnSkill.ItemTemplateSkillId);
-                            SkillUtil.setSkill(player, curSkill);
-                            var msg = Service.gI().messageSubCommand((byte) 62);
-                            msg.writer().writeShort(curSkill.skillId);
-                            player.sendMessage(msg);
-                            msg.cleanup();
-                            PlayerService.gI().sendInfoHpMpMoney(player);
-                        } catch (Exception e) {
-                            NLogger.logError(e);
-                        }
-                    }
-                    ArrayList<String> menu = new ArrayList<>();
-                    menu.add("Nhiệm vụ");
-                    menu.add("Học\nKỹ năng");
-                    if (player.clan != null) {
-                        menu.add("Về khu\nvực bang");
-                        if (player.clan.isLeader(player)) {
-                            menu.add("Giải tán\nBang hội");
-                            menu.add("Kho báu\ndưới biển");
-                        }
-                    }
-                    this.createOtherMenu(player, 0, "Chào con, ta rất vui khi gặp con\nCon muốn làm gì nào ?", menu.toArray(new String[0]));
-                } else if (select == 2) {
-                    Item ruacon = InventoryService.gI().findItemBag(player, 874);
-                    if (ruacon != null && ruacon.quantity >= 1) {
-                        this.createOtherMenu(player, 1, "Cảm ơn cậu đã cứu con rùa của ta\nĐể cảm ơn ta sẽ tặng cậu món quà.", "Nhận quà", "Đóng");
-                    }
-                }
-                break;
+        int indexMenu = player.idMark.getIndexMenu();
+        switch (indexMenu) {
+            case ConstNpc.BASE_MENU -> handleBaseMenuSelect(player, select);
+            case MENU_CHOOSE_ACTION -> handleActionMenuSelect(player, select);
+            case ConstNpc.MENU_HOC_KY_NANG -> handleHocKyNangMenu(player, select);
+            case MENU_XAC_NHAN_HUY_HOC -> handleConfirmHuyHoc(player, select);
+            case MENU_XAC_NHAN_GIAI_TAN -> handleConfirmGiaiTan(player, select);
+            case ConstNpc.MENU_OPEN_DBKB, ConstNpc.MENU_OPENED_DBKB -> handleBanDoKhoBau(player, select);
+            case ConstNpc.MENU_ACCEPT_GO_TO_BDKB -> handleAcceptGoToBDKB(player, select);
+        }
+    }
 
-            case 13:
-                break;
+    private void handleBaseMenuSelect(Player player, int select) {
+        if (select == 0) {
+            if (player.LearnSkill.Time != -1 && player.LearnSkill.Time <= System.currentTimeMillis()) {
+                LearnSkillService.gI().finishLearnSkill(player);
+            }
 
-            case 12:
-                if (select == 1) {
-                    this.createOtherMenu(player, 13, "Con có muốn huỷ học kỹ năng này và nhận lại 50% số tiềm năng không ?", "Ok", "Đóng");
-                } else if (select == 0) {
-                    long time = player.LearnSkill.Time - System.currentTimeMillis();
-                    int ngoc = 5;
-                    if (time / 600_000 >= 2) {
-                        ngoc += time / 600_000;
-                    }
-                    if (player.inventory.gem < ngoc) {
-                        Service.gI().sendThongBao(player, "Bạn không có đủ ngọc");
-                        return;
-                    }
-                    player.inventory.subGem(ngoc);
-                    player.LearnSkill.Time = -1;
-                    try {
-                        String[] subName = ItemService.gI().getTemplate(player.LearnSkill.ItemTemplateSkillId).name.split("");
-                        byte level = Byte.parseByte(subName[subName.length - 1]);
-                        Skill curSkill = SkillUtil.getSkillByItemID(player, player.LearnSkill.ItemTemplateSkillId);
-                        if (curSkill.point == 0) {
-                            player.BoughtSkill.add((int) player.LearnSkill.ItemTemplateSkillId);
-                            curSkill = SkillUtil.createSkill(SkillUtil.getTempSkillSkillByItemID(player.LearnSkill.ItemTemplateSkillId), level);
-                        }
-                        SkillUtil.setSkill(player, curSkill);
-                        var msg = Service.gI().messageSubCommand((byte) 62);
-                        msg.writer().writeShort(curSkill.skillId);
-                        player.sendMessage(msg);
-                        msg.cleanup();
-                        PlayerService.gI().sendInfoHpMpMoney(player);
-                    } catch (Exception e) {
-                        NLogger.logError(e);
-                    }
+            List<String> menu = new ArrayList<>();
+            menu.add("Nhiệm vụ");
+            menu.add("Học\nKỹ năng");
+            if (player.clan != null) {
+                menu.add("Về khu\nvực bang");
+                if (player.clan.isLeader(player)) {
+                    menu.add("Giải tán\nBang hội");
+                    menu.add("Kho báu\ndưới biển");
                 }
-                break;
+            }
+            this.createOtherMenu(player, MENU_CHOOSE_ACTION, "Chào con, ta rất vui khi gặp con\nCon muốn làm gì nào ?", menu.toArray(String[]::new));
+        } else if (select == 1) {
+            Item ruaCon = InventoryService.gI().findItemBag(player, ID_RUA_CON);
+            if (ruaCon != null && ruaCon.quantity >= 1) {
+                this.createOtherMenu(player, MENU_GIAO_RUA_CON, "Cảm ơn cậu đã cứu con rùa của ta\nĐể cảm ơn ta sẽ tặng cậu món quà.", "Nhận quà", "Đóng");
+            }
+        }
+    }
 
-            case 0:
-                switch (select) {
-                    case 0:
-                        NpcService.gI().createTutorial(player, tempId, avartar, player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).name);
-                        break;
-                    case 1:
-                        if (player.LearnSkill.Time != -1) {
-                            int ngoc = 5;
-                            long time = player.LearnSkill.Time - System.currentTimeMillis();
-                            if (time / 600_000 >= 2) {
-                                ngoc += time / 600_000;
-                            }
-                            String[] subName = ItemService.gI().getTemplate(player.LearnSkill.ItemTemplateSkillId).name.split("");
-                            byte level = Byte.parseByte(subName[subName.length - 1]);
-                            this.createOtherMenu(player, 12, "Con đang học kỹ năng\n" + SkillUtil.findSkillTemplate(SkillUtil.getTempSkillSkillByItemID(player.LearnSkill.ItemTemplateSkillId)).name + " cấp " + level + "\nThời gian còn lại " + TimeUtil.getTime(time), "Học\nCấp tốc\n" + ngoc + " ngọc", "Huỷ", "Bỏ qua");
-                        } else {
-                            ShopService.gI().opendShop(player, "QUY_LAO", false);
-                        }
-                        break;
-                    case 2:
-                        if (player.clan != null) {
-                            ChangeMapService.gI().changeMapNonSpaceship(player, 153, Util.nextInt(100, 200), 432);
-                        }
-                        break;
-                    case 3:
-                        if (player.clan != null && player.clan.isLeader(player)) {
-                            createOtherMenu(player, 4, "Con có chắc muốn giải tán bang hội không?", "Đồng ý", "Từ chối");
-                        }
-                        break;
-                    case 4:
-                        if (player.clan != null && player.clan.BanDoKhoBau != null) {
-                            this.createOtherMenu(player, ConstNpc.MENU_OPENED_DBKB, "Bang hội con đang ở hang kho báu cấp " + player.clan.BanDoKhoBau.level + "\ncon có muốn đi cùng họ không?", "Top\nBang hội", "Thành tích\nBang", "Đồng ý", "Từ chối");
-                        } else {
-                            this.createOtherMenu(player, ConstNpc.MENU_OPEN_DBKB, "Đây là bản đồ kho báu hải tặc tí hon\nCác con cứ yên tâm lên đường\nỞ đây có ta lo\nNhớ chọn cấp độ vừa sức mình nhé", "Top\nBang hội", "Thành tích\nBang", "Chọn\ncấp độ", "Từ chối");
-                        }
-                        break;
+    private void handleActionMenuSelect(Player player, int select) {
+        switch (select) {
+            case 0 -> NpcService.gI().createTutorial(player, tempId, avartar, player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).name);
+            case 1 -> handleLearnSkillStep(player);
+            case 2 -> {
+                if (player.clan != null) {
+                    ChangeMapService.gI().changeMapNonSpaceship(player, ConstMap.LANH_DIA_BANG_HOI, Util.nextInt(100, 200), Y_LANDING_CLAN_AREA);
                 }
-                break;
+            }
+            case 3 -> {
+                if (player.clan != null && player.clan.isLeader(player)) {
+                    createOtherMenu(player, MENU_XAC_NHAN_GIAI_TAN, "Con có chắc muốn giải tán bang hội không?", "Đồng ý", "Từ chối");
+                }
+            }
+            case 4 -> handleBanDoKhoBauMenu(player);
+        }
+    }
 
-            case 4:
-                if (player.clan != null && player.clan.isLeader(player) && select == 0) {
-                    Input.gI().createFormGiaiTanBangHoi(player);
-                }
-                break;
+    private void handleLearnSkillStep(Player player) {
+        if (player.LearnSkill.Time == -1) {
+            ShopService.gI().opendShop(player, "QUY_LAO", false);
+            return;
+        }
 
-            case ConstNpc.MENU_OPENED_DBKB:
-                if (select == 2) {
-                    if (player.clan == null) {
-                        Service.gI().sendThongBao(player, "Hãy vào bang hội trước");
-                    } else if (player.isAdmin() || player.nPoint.power >= TreasureUnderSea.POWER_CAN_GO_TO_DBKB) {
-                        ChangeMapService.gI().goToDBKB(player);
-                    } else {
-                        this.npcChat(player, "Yêu cầu sức mạnh lớn hơn " + Util.numberToMoney(TreasureUnderSea.POWER_CAN_GO_TO_DBKB));
-                    }
-                }
-                break;
+        long time = player.LearnSkill.Time - System.currentTimeMillis();
+        int ngocCost = (time / TIME_UNIT_FOR_GEM_CALC >= 2) ? (5 + (int) (time / TIME_UNIT_FOR_GEM_CALC)) : 5;
+        byte levelTarget = LearnSkillService.gI().getLevelFromItem((int) player.LearnSkill.ItemTemplateSkillId);
+        String skillName = SkillUtil.findSkillTemplate(SkillUtil.getTempSkillSkillByItemID(player.LearnSkill.ItemTemplateSkillId)).name;
 
-            case ConstNpc.MENU_OPEN_DBKB:
-                if (select == 2) {
-                    if (player.clan == null) {
-                        Service.gI().sendThongBao(player, "Hãy vào bang hội trước");
-                    } else if (player.isAdmin() || player.nPoint.power >= TreasureUnderSea.POWER_CAN_GO_TO_DBKB) {
-                        Input.gI().createFormChooseLevelBDKB(player);
-                    } else {
-                        this.npcChat(player, "Yêu cầu sức mạnh lớn hơn " + Util.numberToMoney(TreasureUnderSea.POWER_CAN_GO_TO_DBKB));
-                    }
-                }
-                break;
+        this.createOtherMenu(player, ConstNpc.MENU_HOC_KY_NANG,
+                "Con đang học kỹ năng\n" + skillName + " cấp " + levelTarget + "\nThời gian còn lại: " + TimeUtil.getTime(time),
+                "Học\nCấp tốc\n" + ngocCost + " ngọc", "Huỷ", "Bỏ qua");
+    }
 
-            case ConstNpc.MENU_ACCEPT_GO_TO_BDKB:
-                if (select == 0) {
-                    TreasureUnderSeaService.gI().openBanDoKhoBau(player, Byte.parseByte(String.valueOf(PLAYERID_OBJECT.get(player.id))));
-                }
-                break;
+    private void handleHocKyNangMenu(Player player, int select) {
+        if (select == 0) {
+            long time = player.LearnSkill.Time - System.currentTimeMillis();
+            int ngocCost = (time / TIME_UNIT_FOR_GEM_CALC >= 2) ? (5 + (int) (time / TIME_UNIT_FOR_GEM_CALC)) : 5;
+            if (player.inventory.gem < ngocCost) {
+                Service.gI().sendThongBao(player, "Bạn không có đủ ngọc để học cấp tốc");
+                return;
+            }
+            player.inventory.subGem(ngocCost);
+            LearnSkillService.gI().finishLearnSkill(player);
+        } else if (select == 1) {
+            this.createOtherMenu(player, MENU_XAC_NHAN_HUY_HOC, "Con có muốn huỷ học kỹ năng này và nhận lại 50% số tiềm năng không ?", "Ok", "Đóng");
+        }
+    }
+
+    private void handleConfirmHuyHoc(Player player, int select) {
+        if (select == 0) LearnSkillService.gI().cancelLearn(player);
+    }
+
+    private void handleConfirmGiaiTan(Player player, int select) {
+        if (select == 0 && player.clan != null && player.clan.isLeader(player)) {
+            Input.gI().createFormGiaiTanBangHoi(player);
+        }
+    }
+
+    private void handleBanDoKhoBauMenu(Player player) {
+        if (player.clan == null) return;
+        if (player.clan.BanDoKhoBau != null) {
+            this.createOtherMenu(player, ConstNpc.MENU_OPENED_DBKB, "Bang hội con đang ở hang kho báu cấp " + player.clan.BanDoKhoBau.level + "\ncon có muốn đi cùng họ không?", "Top\nBang hội", "Thành tích\nBang", "Đồng ý", "Từ chối");
+        } else {
+            this.createOtherMenu(player, ConstNpc.MENU_OPEN_DBKB, "Đây là bản đồ kho báu hải tặc tí hon...", "Top\nBang hội", "Thành tích\nBang", "Chọn\ncấp độ", "Từ chối");
+        }
+    }
+
+    private void handleBanDoKhoBau(Player player, int select) {
+        if (select != 2) return;
+        if (player.clan == null) {
+            Service.gI().sendThongBao(player, "Hãy vào bang hội trước");
+            return;
+        }
+        if (!player.isAdmin() && player.nPoint.power < TreasureUnderSea.POWER_CAN_GO_TO_DBKB) {
+            this.npcChat(player, "Yêu cầu sức mạnh lớn hơn " + Util.numberToMoney(TreasureUnderSea.POWER_CAN_GO_TO_DBKB));
+            return;
+        }
+        
+        if (player.idMark.getIndexMenu() == ConstNpc.MENU_OPENED_DBKB) {
+            ChangeMapService.gI().goToDBKB(player);
+        } else {
+            Input.gI().createFormChooseLevelBDKB(player);
+        }
+    }
+
+    private void handleAcceptGoToBDKB(Player player, int select) {
+        if (select == 0) {
+            TreasureUnderSeaService.gI().openBanDoKhoBau(player, Byte.parseByte(String.valueOf(PLAYERID_OBJECT.get(player.id))));
         }
     }
 }

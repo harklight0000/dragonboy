@@ -68,7 +68,7 @@ public final class ChatPopup extends Effect2 implements IActionListener {
       q = new nr_ds();
       int var4 = serverChatPopUp.d.length;
       q.a(var4, 12, serverChatPopUp.e, serverChatPopUp.f - serverChatPopUp.s + 12, serverChatPopUp.a + 2, serverChatPopUp.g - 25, true, 1);
-      SoundMn.stopAll();
+      SettingMn.stopAll();
    }
 
    public static void b(String var0, int var1, Npc var2) {
@@ -85,7 +85,7 @@ public final class ChatPopup extends Effect2 implements IActionListener {
       currChatPopup.j = new CommandLine(var4, currChatPopup, 8000, (Object)null);
       currChatPopup.j.x = main.GameCanvas.z / 2 - 35;
       currChatPopup.j.y = main.GameCanvas.A - 35;
-      SoundMn.stopAll();
+      SettingMn.stopAll();
    }
 
    public static ChatPopup c(String var0, int var1, Npc var2) {
@@ -180,7 +180,7 @@ public final class ChatPopup extends Effect2 implements IActionListener {
          this.f = main.GameCanvas.menu.d - this.g;
       } else {
          this.s = 0;
-         if (GameScreen.gI().cb == null && GameScreen.gI().left == null && GameScreen.gI().center == null && this.j == null && this.k == null) {
+         if (GameScreen.gI().right == null && GameScreen.gI().left == null && GameScreen.gI().center == null && this.j == null && this.k == null) {
             this.e = main.GameCanvas.z / 2 - this.a / 2 - 1;
             this.f = main.GameCanvas.A - 5 - this.g;
          } else {

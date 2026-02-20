@@ -47,7 +47,7 @@ public final class LoginScreen extends mScreen implements IActionListener {
    }
 
    public final void switchToMe() {
-      SoundMn.stopAll();
+      SettingMn.stopAll();
       this.tfUser.isFocus = true;
       this.tfPass.isFocus = false;
       if (GameCanvas.isTouch) {
@@ -178,7 +178,7 @@ public final class LoginScreen extends mScreen implements IActionListener {
             this.tfUser.isFocus = false;
             this.tfPass.isFocus = true;
             if (!GameCanvas.isTouch) {
-               super.cb = this.tfPass.j;
+               super.right = this.tfPass.j;
             }
 
          } else {
@@ -380,9 +380,9 @@ public final class LoginScreen extends mScreen implements IActionListener {
       if (!c) {
          if (!GameCanvas.isTouch) {
             if (this.tfUser.isFocus) {
-               super.cb = this.tfUser.j;
+               super.right = this.tfUser.j;
             } else {
-               super.cb = this.tfPass.j;
+               super.right = this.tfPass.j;
             }
          }
 

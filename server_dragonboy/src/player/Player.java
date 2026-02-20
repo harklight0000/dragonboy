@@ -57,7 +57,7 @@ import services.BadgesTaskService;
 import task.TaskPlayer;
 import services.TaskService;
 import utils.Functions;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.util.*;
@@ -593,7 +593,7 @@ public class Player implements Runnable {
                     }
                 }
             } catch (Exception e) {
-                NLogger.logError(e, "Lỗi tại player: " + this.name);
+                MyLogger.logError(e, "Lỗi tại player: " + this.name);
             }
         }
     }

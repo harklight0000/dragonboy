@@ -36,7 +36,7 @@ import player.skill.Skill;
 import task.BadgesTask;
 import services.BadgesTaskService;
 import task.TaskMain;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.SkillUtil;
 import utils.TimeUtil;
 import utils.Util;
@@ -47,7 +47,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import database.InMemoryResultSet;
+import database.MyResultSet;
 
 public class PlayerDAO {
 
@@ -336,7 +336,7 @@ public class PlayerDAO {
                             + "values ()", userId, name, hair, gender, 0, -1, inventory, location, point, magicTree,
                     itemsBody, itemsBag, itemsBox, itemsBoxLuckyRound, itemsDaBan, friends, enemies, intrinsic,
                     itemTime, task, mabuEgg, charms, skills, skillsShortcut, petData, dataBlackBall, dataSideTask, dataBoughtSkill, dailyGift);
-            NLogger.logInformation("Create new player: " + name);
+            MyLogger.logInformation("Create new player: " + name);
             return true;
         } catch (Exception e) {
 //            Logger.logException(PlayerDAO.class, e, "Lỗi tạo player mới");
@@ -969,7 +969,7 @@ public class PlayerDAO {
 //                    Logger.info("Player Update -> " + player.name + ": " + (System.currentTimeMillis() -st) + "ms\n");
                 }
             } catch (Exception e) {
-                NLogger.logError(e, "Error to save player " + player.name);
+                MyLogger.logError(e, "Error to save player " + player.name);
             }
 
         }
@@ -1005,7 +1005,7 @@ public class PlayerDAO {
     
     public static Player login(MySession session, AntiLogin al) {
         Player player = null;
-        InMemoryResultSet rs = null;
+        MyResultSet rs = null;
         Player plInGame;
         try {
             rs = SqlFetcher.executeQuery("select * from account where username = ? and password = ?", session.uu, session.pp);
@@ -1077,7 +1077,7 @@ public class PlayerDAO {
                 player.dispose();
                 player = null;
             }
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (rs != null) {
                 rs.dispose();
@@ -1088,7 +1088,7 @@ public class PlayerDAO {
 
     public static Player loadById(long id) {
         Player player = null;
-        InMemoryResultSet rs = null;
+        MyResultSet rs = null;
         try {
             rs = SqlFetcher.executeQuery("select * from player where id = ? limit 1", id);
             if (rs.first() && (player = loadPlayer(rs, true)) != null) {
@@ -1100,7 +1100,7 @@ public class PlayerDAO {
                 player.dispose();
                 player = null;
             }
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (rs != null) {
                 rs.dispose();
@@ -1109,7 +1109,7 @@ public class PlayerDAO {
         return player;
     }
 
-    private static Player loadPlayer(InMemoryResultSet rs, boolean isOffline) throws Exception {
+    private static Player loadPlayer(MyResultSet rs, boolean isOffline) throws Exception {
         Player player = null;
         try {
             int plHp;
@@ -1198,7 +1198,7 @@ public class PlayerDAO {
 
                 player.zone = MapService.gI().getMapCanJoin(player, mapId, -1);
             } catch (Exception e) {
-                NLogger.logWarning(e.getMessage() );
+                MyLogger.logWarning(e.getMessage() );
             }
             dataArray.clear();
 
@@ -2010,7 +2010,7 @@ public class PlayerDAO {
                 }
                 dataArray.clear();
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
             try {
                 dataArray = (JSONArray) JSONValue.parse(rs.getString("dataBadges"));
@@ -2099,7 +2099,7 @@ public class PlayerDAO {
     }
 
     public static boolean usernameExists(String name) throws Exception{
-        InMemoryResultSet rs = SqlFetcher.executeQuery("select * from player where name = ?", name);
+        MyResultSet rs = SqlFetcher.executeQuery("select * from player where name = ?", name);
         return rs.first();
     }
     
@@ -2143,7 +2143,7 @@ public class PlayerDAO {
             ps.executeUpdate();
             player.getSession().vnd -= num;
         } catch (Exception e) {
-            NLogger.logError(e, "Lỗi update mua thành viên " + player.name);
+            MyLogger.logError(e, "Lỗi update mua thành viên " + player.name);
             return false;
         }
         return true;
@@ -2167,7 +2167,7 @@ public class PlayerDAO {
             player.getSession().tongnap -= num;
 
         } catch (Exception e) {
-            NLogger.logError(e, "Lỗi update tongnap " + player.name);
+            MyLogger.logError(e, "Lỗi update tongnap " + player.name);
             return false;
         }
         return true;

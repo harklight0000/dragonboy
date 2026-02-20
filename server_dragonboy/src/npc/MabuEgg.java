@@ -5,7 +5,7 @@ import network.Message;
 import player.Player;
 import services.PetService;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 public class MabuEgg {
@@ -39,7 +39,7 @@ public class MabuEgg {
             this.player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

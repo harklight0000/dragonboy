@@ -54,7 +54,7 @@ public final class ItemMap implements IMapObject {
          this.n = this.b;
          this.q = 120;
          this.o = 0;
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             this.p = 360 / this.q;
             this.r = new int[this.q];
             this.s = new int[this.q];
@@ -123,7 +123,7 @@ public final class ItemMap implements IMapObject {
                this.v = 0;
             }
 
-            if (this.v % 10 == 0 && !main.GameCanvas.a) {
+            if (this.v % 10 == 0 && !main.GameCanvas.isLowGraphic) {
                ServerEffect.addServerEffect(114, this.a - 5, this.b - 30, 1);
             }
          }
@@ -148,7 +148,7 @@ public final class ItemMap implements IMapObject {
 
          mGraphics var2 = var1;
          ItemMap var4 = this;
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             for(int var3 = 0; var3 < var4.s.length; ++var3) {
                if (var4.v == var3) {
                   if (var4.w <= 20) {
@@ -192,7 +192,7 @@ public final class ItemMap implements IMapObject {
    }
 
    private void c() {
-      if (!main.GameCanvas.a) {
+      if (!main.GameCanvas.isLowGraphic) {
          for(int var1 = 0; var1 < this.s.length; ++var1) {
             this.s[var1] = ResLog.abs(this.l * ResLog.sin(this.o) / 1024);
             this.r[var1] = ResLog.abs(this.l * ResLog.cos(this.o) / 1024);

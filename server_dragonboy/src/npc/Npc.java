@@ -8,7 +8,7 @@ import network.Message;
 import player.Player;
 import server.GameData;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 public abstract class Npc implements IAtionNpc {
@@ -112,7 +112,7 @@ public abstract class Npc implements IAtionNpc {
                     msg.cleanup();
                 }
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
         }
     }
@@ -126,7 +126,7 @@ public abstract class Npc implements IAtionNpc {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -139,7 +139,7 @@ public abstract class Npc implements IAtionNpc {
             Service.gI().sendMessAllPlayerInMap(zone, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -154,7 +154,7 @@ public abstract class Npc implements IAtionNpc {
             }
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

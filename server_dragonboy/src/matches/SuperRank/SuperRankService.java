@@ -9,7 +9,7 @@ import network.Message;
 import player.Player;
 import server.Client;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.TimeUtil;
 import utils.Util;
 
@@ -110,7 +110,7 @@ public class SuperRankService {
             }
             list.clear();
         } catch (Exception e) {
-            NLogger.logWarning("cant load SuperRank: " + e.getMessage());
+            MyLogger.logWarning("cant load SuperRank: " + e.getMessage());
 //            e.printStackTrace();
         } finally {
             if (msg != null) {

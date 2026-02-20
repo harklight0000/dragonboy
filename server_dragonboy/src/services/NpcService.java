@@ -12,7 +12,7 @@ import npc.Npc;
 import npc.NpcFactory;
 import player.Player;
 import server.GameData;
-import logger.NLogger;
+import logger.MyLogger;
 
 public class NpcService {
 
@@ -58,7 +58,7 @@ public class NpcService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

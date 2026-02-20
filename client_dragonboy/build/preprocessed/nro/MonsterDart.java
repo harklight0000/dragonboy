@@ -40,7 +40,7 @@ public final class MonsterDart extends Effect2 {
       this.g = this.d * ResLog.cos(var8) >> 10;
       this.h = this.d * ResLog.sin(var8) >> 10;
       if (var1 >= GameScreen.cmx && var1 <= GameScreen.cmx + main.GameCanvas.z) {
-         SoundMn.stopAll();
+         SettingMn.stopAll();
       }
 
    }
@@ -78,7 +78,7 @@ public final class MonsterDart extends Effect2 {
             if (this.n != -100) {
                ServerEffect.a(81, (Char)this.o, 1);
                if (this.i >= GameScreen.cmx && this.i <= GameScreen.cmx + main.GameCanvas.z) {
-                  SoundMn.stopAll();
+                  SettingMn.stopAll();
                }
             }
 

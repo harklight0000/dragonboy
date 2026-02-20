@@ -109,7 +109,7 @@ public final class PlayerDart {
    private void b() {
       ResLog.c("END ME!");
       if (!this.b.ch && this.i >= GameScreen.cmx && this.i <= GameScreen.cmx + main.GameCanvas.z) {
-         SoundMn.stopAll();
+         SettingMn.stopAll();
       }
 
       this.b.E();

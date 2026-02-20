@@ -305,8 +305,8 @@ public class Char implements IMapObject {
    private int eU = 0;
    private String eV = "aura_";
    public short idAuraEff = -1;
-   public static boolean cU;
-   public static boolean cV;
+   public static boolean isEnableSpecialAura;
+   public static boolean isEnablePowerAura;
    private FrameImage eW;
    private FrameImage eX;
    private String eY = "set_eff_";
@@ -348,8 +348,8 @@ public class Char implements IMapObject {
       int[][] var1 = new int[][]{{1, 0, 1, 1000, 40, 1, 0, 20, 0, 0, 0, 0}, {2, 1, 10, 1000, 100, 1, 0, 40, 0, 0, 0, 0}, {2, 2, 11, 800, 100, 1, 0, 45, 0, 0, 0, 0}, {2, 3, 12, 600, 100, 1, 0, 50, 0, 0, 0, 0}, {2, 4, 13, 500, 100, 1, 0, 55, 0, 0, 0, 0}, {3, 1, 14, 500, 100, 1, 0, 60, 0, 0, 0, 0}, {3, 2, 14, 500, 100, 1, 0, 60, 0, 0, 0, 0}, {3, 3, 14, 500, 100, 1, 0, 60, 0, 0, 0, 0}, {3, 4, 14, 500, 100, 1, 0, 60, 0, 0, 0, 0}, {3, 5, 14, 500, 100, 1, 0, 60, 0, 0, 0, 0}};
       cn = false;
       cS = new int[][]{{542, 543}};
-      cU = true;
-      cV = true;
+      isEnableSpecialAura = true;
+      isEnablePowerAura = true;
       fg = new int[][]{{5, -7}, {5, -7}, {5, -8}, {5, -7}, {5, -6}, {5, -8}, {5, -7}, {9, 0}, {11, 1}, {4, 0}, {4, -1}, {4, 8}, {6, 5}, {6, -6}, {2, -5}, {7, -8}, {7, -6}, {8, 0}, {7, 5}, {9, -7}, {7, -3}, {2, 8}, {4, 5}, {10, -5}, {9, -5}, {9, -5}, {6, -6}, {2, -5}, {7, -8}, {7, -6}, {9, -7}, {7, -3}};
    }
 
@@ -417,7 +417,7 @@ public class Char implements IMapObject {
       if (var1.c == 0) {
          Hint.f = false;
          Hint.h = false;
-         GameScreen.gI().cb = null;
+         GameScreen.gI().right = null;
          GameScreen.N = false;
          GameScreen.gI().left = null;
          if (var1.a < 4) {
@@ -431,7 +431,7 @@ public class Char implements IMapObject {
          }
 
          if (var1.a >= 5) {
-            GameScreen.gI().cb = GameScreen.gI().s;
+            GameScreen.gI().right = GameScreen.gI().s;
          }
       }
 
@@ -440,7 +440,7 @@ public class Char implements IMapObject {
       }
 
       if (var1.c > 0) {
-         GameScreen.gI().cb = GameScreen.gI().s;
+         GameScreen.gI().right = GameScreen.gI().s;
          GameScreen.gI().left = GameScreen.gI().aQ;
       }
 
@@ -891,7 +891,7 @@ public class Char implements IMapObject {
 
                   } else {
                      if (this.me && this.statusMe == 10 && this.as == 8 && this.dM > 20 && main.GameCanvas.v % 20 == 0) {
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                      }
 
                      if (this.skillPaint != null && this.D() != null && this.cb < this.D().length) {
@@ -924,9 +924,9 @@ public class Char implements IMapObject {
 
                         if (var10000 && (this.me || !this.me && this.cx >= GameScreen.cmx && this.cx <= GameScreen.cmx + main.GameCanvas.z) && main.GameCanvas.v % 5 == 0) {
                            if (this.as != 9 && this.as != 10 && this.as != 11) {
-                              SoundMn.stopAll();
+                              SettingMn.stopAll();
                            } else {
-                              SoundMn.stopAll();
+                              SettingMn.stopAll();
                            }
                         }
                      }
@@ -1312,7 +1312,7 @@ public class Char implements IMapObject {
                                                                   this.D = this.E = 0;
                                                                   this.ae();
                                                                } else {
-                                                                  SoundMn.stopAll();
+                                                                  SettingMn.stopAll();
                                                                   this.cx = this.bP.a;
                                                                   this.statusMe = 10;
                                                                   this.E = -5;
@@ -1321,7 +1321,7 @@ public class Char implements IMapObject {
                                                                }
                                                             }
                                                          } else {
-                                                            SoundMn.stopAll();
+                                                            SettingMn.stopAll();
                                                             this.cx = this.bP.a;
                                                             this.statusMe = 10;
                                                             this.E = -5;
@@ -1587,7 +1587,7 @@ public class Char implements IMapObject {
                                              this.bk = false;
                                              if (this.bl) {
                                                 this.bl = false;
-                                                SoundMn.stopAll();
+                                                SettingMn.stopAll();
                                                 Service.gI().c((byte)3);
                                              }
 
@@ -1993,13 +1993,13 @@ public class Char implements IMapObject {
                      this.dart = new PlayerDart(this, var4 - 100, this.skillPaintRandomPaint, this.cx + (var1[var3].l - 10) * this.I, this.cy + var1[var3].m + var10);
                      if (this.myskill != null) {
                         if (this.myskill.template.id == 1) {
-                           SoundMn.stopAll();
+                           SettingMn.stopAll();
                         } else if (this.myskill.template.id == 3) {
-                           SoundMn.stopAll();
+                           SettingMn.stopAll();
                         } else if (this.myskill.template.id == 5) {
-                           SoundMn.stopAll();
+                           SettingMn.stopAll();
                         } else if (this.myskill.template.id == 11) {
-                           SoundMn.stopAll();
+                           SettingMn.stopAll();
                         }
                      }
                   } else if (this.ci || this.ch) {
@@ -2157,7 +2157,7 @@ public class Char implements IMapObject {
       this.bk = false;
       if (this.bl) {
          this.bl = false;
-         SoundMn.stopAll();
+         SettingMn.stopAll();
          Service.gI().c((byte)3);
       }
 
@@ -2206,10 +2206,10 @@ public class Char implements IMapObject {
             if (!this.cJ) {
                if (!this.eE) {
                   if (!this.es && !this.et) {
-                     if (!main.GameCanvas.a) {
+                     if (!main.GameCanvas.isLowGraphic) {
                         if (this.cC != 1) {
                            if (this.me) {
-                              if (!cU && this.idAuraEff >= 0) {
+                              if (!isEnableSpecialAura && this.idAuraEff >= 0) {
                                  return;
                               }
                            } else if (this.idAuraEff >= 0) {
@@ -2218,7 +2218,7 @@ public class Char implements IMapObject {
 
                            ++this.dM;
                            if (this.S < 14) {
-                              if (this.S >= 9 && !main.GameCanvas.a && (this.dM == 40 || this.dM == 50)) {
+                              if (this.S >= 9 && !main.GameCanvas.isLowGraphic && (this.dM == 40 || this.dM == 50)) {
                                  main.GameCanvas.a().a(-1, this.cx - -8, this.cy);
                                  main.GameCanvas.a().a(1, this.cx - 8, this.cy);
                                  this.e(1);
@@ -2270,9 +2270,9 @@ public class Char implements IMapObject {
       int var1 = this.cC == 1 && !this.me ? 2 : 1;
       if (this.cx >= GameScreen.cmx && this.cx <= GameScreen.cmx + main.GameCanvas.z) {
          if (this.cC == 0) {
-            SoundMn.stopAll();
+            SettingMn.stopAll();
          } else {
-            SoundMn.stopAll();
+            SettingMn.stopAll();
          }
       }
 
@@ -2280,7 +2280,7 @@ public class Char implements IMapObject {
       this.bk = false;
       if (this.bl) {
          this.bl = false;
-         SoundMn.stopAll();
+         SettingMn.stopAll();
          Service.gI().c((byte)3);
       }
 
@@ -2379,7 +2379,7 @@ public class Char implements IMapObject {
       this.bk = false;
       if (this.bl) {
          this.bl = false;
-         SoundMn.stopAll();
+         SettingMn.stopAll();
          Service.gI().c((byte)3);
       }
 
@@ -2499,7 +2499,7 @@ public class Char implements IMapObject {
          if (this.cy + 4 >= TileMap.d) {
             this.statusMe = 1;
             if (this.me) {
-               SoundMn.stopAll();
+               SettingMn.stopAll();
             }
 
             this.D = this.E = 0;
@@ -2593,7 +2593,7 @@ public class Char implements IMapObject {
                      this.cy = TileMap.f(this.cy + 3);
                      this.statusMe = 1;
                      if (this.me) {
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                      }
 
                      this.G = 0;
@@ -3220,25 +3220,25 @@ public class Char implements IMapObject {
 
                   if (this.me) {
                      if (this.myskill.template.id == 7) {
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                      }
 
                      if (this.myskill.template.id == 6) {
                         Service.gI().c((byte)0);
                         GameScreen.gI().aZ = true;
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                      }
 
                      if (this.myskill.template.id == 8) {
                         if (!this.bl) {
-                           SoundMn.stopAll();
+                           SettingMn.stopAll();
                            Service.gI().c((byte)1);
                            this.bl = true;
                            this.bo = this.m = System.currentTimeMillis();
                         } else {
                            Service.gI().c((byte)3);
                            this.bl = false;
-                           SoundMn.stopAll();
+                           SettingMn.stopAll();
                         }
                      }
 
@@ -3252,7 +3252,7 @@ public class Char implements IMapObject {
                            return;
                         }
 
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                         Service.gI().c((byte)6);
                         this.ej = 0;
                         this.cE = true;
@@ -3260,7 +3260,7 @@ public class Char implements IMapObject {
                      }
 
                      if (this.myskill.template.id == 14) {
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                         Service.gI().c((byte)7);
                         this.b(true);
                      }
@@ -3368,7 +3368,7 @@ public class Char implements IMapObject {
                }
 
                if (this.cgender == 1) {
-                  SoundMn.stopAll();
+                  SettingMn.stopAll();
                }
 
                this.cj = true;
@@ -3691,14 +3691,14 @@ public class Char implements IMapObject {
                   Small var12;
                   label547: {
                      if (this.me) {
-                        if (!cU && this.idAuraEff >= 0) {
+                        if (!isEnableSpecialAura && this.idAuraEff >= 0) {
                            break label547;
                         }
                      } else if (this.idAuraEff >= 0) {
                         break label547;
                      }
 
-                     if (cV && (this.statusMe == 1 || this.statusMe == 6) && !main.GameCanvas.panel.isShow && mSystem.currentTimeMillis() - this.el > 0L && !this.cD && this.S >= 16) {
+                     if (isEnablePowerAura && (this.statusMe == 1 || this.statusMe == 6) && !main.GameCanvas.panel.isShow && mSystem.currentTimeMillis() - this.el > 0L && !this.cD && this.S >= 16) {
                         short var9 = 7598;
                         if (this.S >= 19) {
                            var9 = 7676;
@@ -3723,7 +3723,7 @@ public class Char implements IMapObject {
                      }
                   }
 
-                  if ((!this.me || !cU) && this.idAuraEff >= 0 && (this.statusMe == 1 || this.statusMe == 6) && !main.GameCanvas.panel.isShow && mSystem.currentTimeMillis() - this.el > 0L && (var10 = mSystem.d(this.eV + this.idAuraEff + "_0")) != null) {
+                  if ((!this.me || !isEnableSpecialAura) && this.idAuraEff >= 0 && (this.statusMe == 1 || this.statusMe == 6) && !main.GameCanvas.panel.isShow && mSystem.currentTimeMillis() - this.el > 0L && (var10 = mSystem.d(this.eV + this.idAuraEff + "_0")) != null) {
                      var10.a(main.GameCanvas.v / 4 % var10.c, this.cx, this.cy, this.I == 1 ? 0 : 2, 33, var1);
                   }
 
@@ -3834,14 +3834,14 @@ public class Char implements IMapObject {
 
                         label448: {
                            if (this.me) {
-                              if (!cU && this.idAuraEff >= 0) {
+                              if (!isEnableSpecialAura && this.idAuraEff >= 0) {
                                  break label448;
                               }
                            } else if (this.idAuraEff >= 0) {
                               break label448;
                            }
 
-                           if (cV) {
+                           if (isEnablePowerAura) {
                               if (this.statusMe != 1 && this.statusMe != 6) {
                                  this.el = mSystem.currentTimeMillis() + 1500L;
                                  this.en = true;
@@ -3858,7 +3858,7 @@ public class Char implements IMapObject {
 
                                     var1.drawImage(main.GameCanvas.S[this.em], this.cx, this.cy + 9, 33);
                                  } else {
-                                    if (this.S >= 14 && !main.GameCanvas.a) {
+                                    if (this.S >= 14 && !main.GameCanvas.isLowGraphic) {
                                        var14 = false;
                                        if (mSystem.currentTimeMillis() - this.el > -1000L && this.en) {
                                           var14 = true;
@@ -3917,12 +3917,12 @@ public class Char implements IMapObject {
                            }
                         }
 
-                        if ((!this.me || cU) && this.idAuraEff >= 0) {
+                        if ((!this.me || isEnableSpecialAura) && this.idAuraEff >= 0) {
                            if (this.statusMe != 1 && this.statusMe != 6) {
                               this.el = mSystem.currentTimeMillis() + 1500L;
                               this.en = true;
                               this.eo = true;
-                           } else if (!main.GameCanvas.panel.isShow && !main.GameCanvas.a) {
+                           } else if (!main.GameCanvas.panel.isShow && !main.GameCanvas.isLowGraphic) {
                               var14 = false;
                               if (mSystem.currentTimeMillis() - this.el > -1000L && this.en) {
                                  var14 = true;
@@ -4985,7 +4985,7 @@ public class Char implements IMapObject {
    }
 
    private void ax() {
-      if (!main.GameCanvas.a) {
+      if (!main.GameCanvas.isLowGraphic) {
          if (TileMap.a(this.cx, this.cy + 1, 1024)) {
             TileMap.b(this.cx, this.cy + 1, 512);
             TileMap.b(this.cx, this.cy - 2, 512);
@@ -5224,7 +5224,7 @@ public class Char implements IMapObject {
    }
 
    private void e(int var1) {
-      if (!main.GameCanvas.a) {
+      if (!main.GameCanvas.isLowGraphic) {
          if (var1 == 1) {
             EffecMn.addEff(new Effect(19, this.cx - 5, this.cy + 20, 2, 1, -1));
             return;

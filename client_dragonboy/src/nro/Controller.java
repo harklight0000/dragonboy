@@ -388,7 +388,7 @@ public final class Controller implements IMessageHandler {
                             var224 = msg.reader().readInt();
                             var7 = msg.reader().readShort();
                             var8 = msg.readInt();
-                            SoundMn.stopAll();
+                            SettingMn.stopAll();
                             if (var224 == Char.myCharz().charID) {
                                 Char.myCharz().aR = new Mob(var224, false, false, false, false, false, var7, 1, var8, (byte) 0, var8, (short) (Char.myCharz().cx + (Char.myCharz().I == 1 ? 40 : -40)), (short) Char.myCharz().cy, (byte) 4, (byte) 0);
                                 Char.myCharz().aR.J = true;
@@ -785,7 +785,7 @@ public final class Controller implements IMessageHandler {
                             GameScreen.gI().bl = msg.reader().readUTF();
                             GameScreen.gI().bp = new int[GameScreen.gI().bl.length()];
                             GameScreen.gI().aK = new Mob();
-                            GameScreen.gI().cb = null;
+                            GameScreen.gI().right = null;
                         }
 
                         if (var10 == 1) {
@@ -794,7 +794,7 @@ public final class Controller implements IMessageHandler {
 
                         if (var10 == 2) {
                             MobCapcha.a = true;
-                            GameScreen.gI().cb = GameScreen.gI().s;
+                            GameScreen.gI().right = GameScreen.gI().s;
                         }
                         break;
                     case -84:
@@ -1813,7 +1813,7 @@ public final class Controller implements IMessageHandler {
                         if (var5 == 3) {
                             if (var6 == Char.myCharz().charID) {
                                 Char.myCharz().bl = false;
-                                SoundMn.stopAll();
+                                SettingMn.stopAll();
                                 Char.myCharz();
                             } else {
                                 GameScreen.findCharInMap(var6).bl = false;
@@ -1852,7 +1852,7 @@ public final class Controller implements IMessageHandler {
                                 Char.myCharz().b(GameScreen.u[var7], 0);
                             } else if (GameScreen.findCharInMap(var6) != null) {
                                 GameScreen.findCharInMap(var6).b(GameScreen.u[var7], 0);
-                                SoundMn.stopAll();
+                                SettingMn.stopAll();
                             }
                         }
 
@@ -1865,7 +1865,7 @@ public final class Controller implements IMessageHandler {
                                 GameScreen.findCharInMap(var6).b(true);
                                 GameScreen.findCharInMap(var6).bm = msg.reader().readShort();
                                 GameScreen.findCharInMap(var6).bo = System.currentTimeMillis();
-                                SoundMn.stopAll();
+                                SettingMn.stopAll();
                             }
                         }
 
@@ -2437,16 +2437,16 @@ public final class Controller implements IMessageHandler {
                                 if (var351.equals("")) {
                                     if (var350.template.type == 9) {
                                         GameScreen.a((var114 < 0 ? "" : "+") + var114, Char.myCharz().cx, Char.myCharz().cy - Char.myCharz().al, 0, -2, 1);
-                                        SoundMn.stopAll();
+                                        SettingMn.stopAll();
                                     } else if (var350.template.type == 10) {
                                         GameScreen.a((var114 < 0 ? "" : "+") + var114, Char.myCharz().cx, Char.myCharz().cy - Char.myCharz().al, 0, -2, 2);
-                                        SoundMn.stopAll();
+                                        SettingMn.stopAll();
                                     } else if (var350.template.type == 34) {
                                         GameScreen.a((var114 < 0 ? "" : "+") + var114, Char.myCharz().cx, Char.myCharz().cy - Char.myCharz().al, 0, -2, 0);
-                                        SoundMn.stopAll();
+                                        SettingMn.stopAll();
                                     } else {
                                         GameScreen.info1.a(mResources.bI + " " + (var114 > 0 ? var114 + " " : "") + var350.template.d, 0);
-                                        SoundMn.stopAll();
+                                        SettingMn.stopAll();
                                     }
 
                                     if (var114 > 0 && Char.myCharz().v != null && Char.myCharz().v.a == 4683) {
@@ -3077,7 +3077,7 @@ public final class Controller implements IMessageHandler {
                         }
                         break;
                     case 69:
-                        SoundMn.a = msg.reader().readByte() != 0;
+                        SettingMn.a = msg.reader().readByte() != 0;
                         break;
                     case 81:
                         GameScreen.F.elementAt(msg.reader().readUnsignedByte());
@@ -3962,7 +3962,7 @@ public final class Controller implements IMessageHandler {
         GameScreen.aD.f = false;
         GameScreen.z = 0;
         main.GameCanvas.panel.isShow = false;
-        SoundMn.stopAll();
+        SettingMn.stopAll();
         if (!GameScreen.b && !nr_cu.b) {
             GameScreen.gI().a();
         }
@@ -4203,7 +4203,7 @@ public final class Controller implements IMessageHandler {
             nr_cx.l.removeAllElements();
             int var33;
             short var39;
-            if (main.GameCanvas.a && (!main.GameCanvas.a || !TileMap.a()) && TileMap.l != 45 && TileMap.l != 46 && TileMap.l != 47 && TileMap.l != 48) {
+            if (main.GameCanvas.isLowGraphic && (!main.GameCanvas.isLowGraphic || !TileMap.a()) && TileMap.l != 45 && TileMap.l != 46 && TileMap.l != 47 && TileMap.l != 48) {
                 var39 = var1.reader().readShort();
 
                 for (var3 = 0; var3 < var39; ++var3) {
@@ -4923,7 +4923,7 @@ public final class Controller implements IMessageHandler {
                     ResLog.c("hpgoc  =" + Char.myCharz().cr + " hp full= " + Char.myCharz().cHPFull);
                     if (Char.myCharz().cHP > var45 && Char.myCharz().cTypePk != 4) {
                         GameScreen.a("+" + (Char.myCharz().cHP - var45) + " " + mResources.eU, Char.myCharz().cx, Char.myCharz().cy - Char.myCharz().al - 20, 0, -1, 9);
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                         if (Char.myCharz().v != null && Char.myCharz().v.a == 5003) {
                             MonsterDart.addMonsterDart(Char.myCharz().v.i + (Char.myCharz().v.b == 1 ? 10 : -10), Char.myCharz().v.e + 10, true, -1, -1, Char.myCharz(), 29);
                         }
@@ -4941,7 +4941,7 @@ public final class Controller implements IMessageHandler {
                     Char.myCharz().cMP = var1.readInt();
                     if (Char.myCharz().cMP > var49) {
                         GameScreen.a("+" + (Char.myCharz().cMP - var49) + " " + mResources.eV, Char.myCharz().cx, Char.myCharz().cy - Char.myCharz().al - 23, 0, -2, 10);
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                         if (Char.myCharz().v != null && Char.myCharz().v.a == 5001) {
                             MonsterDart.addMonsterDart(Char.myCharz().v.i + (Char.myCharz().v.b == 1 ? 10 : -10), Char.myCharz().v.e + 10, true, -1, -1, Char.myCharz(), 29);
                         }
@@ -5525,8 +5525,8 @@ public final class Controller implements IMessageHandler {
             if ((var1 = var0.reader().readByte()) == 0) {
                 var6 = var0.reader().readShort();
                 Char.myCharz().idHat = var6;
-                SoundMn.stopAll();
-                SoundMn.g();
+                SettingMn.stopAll();
+                SettingMn.g();
                 return;
             }
 

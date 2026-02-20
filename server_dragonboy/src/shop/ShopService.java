@@ -19,7 +19,7 @@ import services.ItemService;
 import services.Service;
 import services.func.BuyBackService;
 import services.func.Input;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.SkillUtil;
 import utils.TimeUtil;
 import utils.Util;
@@ -204,7 +204,7 @@ public class ShopService {
                 }
                 player.sendMessage(msg);
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             } finally {
                 if (msg != null) {
                     msg.cleanup();
@@ -260,7 +260,7 @@ public class ShopService {
                 }
                 player.sendMessage(msg);
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             } finally {
                 if (msg != null) {
                     msg.cleanup();
@@ -302,12 +302,11 @@ public class ShopService {
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
 
                         msg.writer().writeByte(0);
-
                     }
                 }
                 player.sendMessage(msg);
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             } finally {
                 if (msg != null) {
                     msg.cleanup();
@@ -351,7 +350,7 @@ public class ShopService {
                 }
                 player.sendMessage(msg);
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             } finally {
                 if (msg != null) {
                     msg.cleanup();

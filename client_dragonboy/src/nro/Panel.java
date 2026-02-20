@@ -242,7 +242,7 @@ public final class Panel implements IActionListener, IChatable {
       u = mSystem.load("/mainImage/new.png");
       w = mSystem.load("/mainImage/ticket12.png");
       F = new String[]{mResources.bR, mResources.bQ, mResources.aF, mResources.bP, mResources.ap, mResources.bT, mResources.T};
-      G = new String[]{main.GameCanvas.ai ? mResources.fz : mResources.fA, mResources.bU, mResources.H, mGraphics.zoomLevel > 1 ? mResources.bY : mResources.bX};
+      G = new String[]{main.GameCanvas.isEnableSound ? mResources.fz : mResources.fA, mResources.bU, mResources.H, mGraphics.zoomLevel > 1 ? mResources.bY : mResources.bX};
       aZ = new String[]{mResources.fU, mResources.bM, mResources.bN, mResources.ad, mResources.fQ};
       ba = new String[]{mResources.o};
       H = 0;
@@ -1177,7 +1177,7 @@ public final class Panel implements IActionListener, IChatable {
       this.timeShow = 20;
       this.isShow = true;
       this.isClose = false;
-      SoundMn.stopAll();
+      SettingMn.stopAll();
       if (this.isTypeShop()) {
          Char.myCharz().setPartOld();
       }
@@ -1379,7 +1379,7 @@ public final class Panel implements IActionListener, IChatable {
 
                                  if (var2 != var1.A) {
                                     var1.dm = 0;
-                                    SoundMn.stopAll();
+                                    SettingMn.stopAll();
                                     switch(var1.z) {
                                     case 0:
                                        if (var1.A == 0) {
@@ -1511,7 +1511,7 @@ public final class Panel implements IActionListener, IChatable {
                                     if (!GameScreen.e() && var4 >= var3 && var4 <= var3 + 70 && var5 >= var2 && var5 <= var2 + 30 && (this.ch == null || !this.ch.m)) {
                                        this.cc = 1;
                                        if (main.GameCanvas.m) {
-                                          SoundMn.stopAll();
+                                          SettingMn.stopAll();
                                           this.bU = 2;
                                           main.GameCanvas.k();
                                        }
@@ -2217,7 +2217,7 @@ public final class Panel implements IActionListener, IChatable {
                this.N();
                this.bP = 0;
                this.bU = 10;
-               SoundMn.stopAll();
+               SettingMn.stopAll();
             } else if (this.aj != -1 && this.bP > 5) {
                this.bP = 0;
                this.bU = 1;
@@ -2274,8 +2274,8 @@ public final class Panel implements IActionListener, IChatable {
    }
 
    private void Q() {
-      SoundMn.stopAll();
-      SoundMn.f();
+      SettingMn.stopAll();
+      SettingMn.f();
       this.N = F.length;
       this.aC = 24;
       this.aj = main.GameCanvas.isTouch ? -1 : 0;
@@ -5251,7 +5251,7 @@ public final class Panel implements IActionListener, IChatable {
          }
 
          ResLog.c("HIDE PANELLLLLLLLLLLLLLLLLLLLLL");
-         SoundMn.stopAll();
+         SettingMn.stopAll();
          GameScreen.bs = true;
          TileMap.s = -1;
          aP = null;
@@ -5295,7 +5295,7 @@ public final class Panel implements IActionListener, IChatable {
             Service.gI().v(-1);
          }
 
-         SoundMn.stopAll();
+         SettingMn.stopAll();
          GameScreen.bs = true;
          TileMap.s = -1;
          if (aP != null) {
@@ -6263,7 +6263,7 @@ public final class Panel implements IActionListener, IChatable {
    private void ag() {
       ResLog.c("selected doFireTool trong Panel:" + this.aj);
       if (this.aj >= 0) {
-         if (SoundMn.a && this.aj == F.length - 1) {
+         if (SettingMn.a && this.aj == F.length - 1) {
             Service.gI().w();
          } else {
             if (!Char.myCharz().havePet) {
@@ -6324,8 +6324,8 @@ public final class Panel implements IActionListener, IChatable {
                   return;
                case 9:
                   if (main.GameCanvas.loginScr.isLogin2) {
-                     SoundMn.stopAll();
-                     SoundMn.h();
+                     SettingMn.stopAll();
+                     SettingMn.h();
                      return;
                   }
                   break;
@@ -6395,8 +6395,8 @@ public final class Panel implements IActionListener, IChatable {
                   return;
                case 10:
                   if (main.GameCanvas.loginScr.isLogin2) {
-                     SoundMn.stopAll();
-                     SoundMn.h();
+                     SettingMn.stopAll();
+                     SettingMn.h();
                   }
                }
             }
@@ -7613,8 +7613,8 @@ public final class Panel implements IActionListener, IChatable {
    private void ar() {
       this.z = 19;
       this.c(0);
-      SoundMn.stopAll();
-      SoundMn.g();
+      SettingMn.stopAll();
+      SettingMn.g();
       this.N = G.length;
       this.aC = 24;
       this.aj = main.GameCanvas.isTouch ? -1 : 0;
@@ -7658,18 +7658,18 @@ public final class Panel implements IActionListener, IChatable {
       if (this.aj >= 0) {
          switch(this.aj) {
          case 0:
-            SoundMn.stopAll().b();
+            SettingMn.stopAll().b();
             return;
          case 1:
-            SoundMn.stopAll().e();
+            SettingMn.stopAll().e();
             return;
          case 2:
             return;
          case 3:
-            SoundMn.stopAll().d();
+            SettingMn.stopAll().d();
             return;
          case 4:
-            SoundMn.stopAll().c();
+            SettingMn.stopAll().c();
          case 5:
          default:
          }

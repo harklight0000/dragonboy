@@ -9,7 +9,7 @@ import server.Maintenance;
 import server.DragonBoy;
 import services.Service;
 import utils.Functions;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.TimeUtil;
 import utils.Util;
 
@@ -163,7 +163,7 @@ public class TransactionService implements Runnable {
                     break;
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

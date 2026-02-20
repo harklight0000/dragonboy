@@ -16,7 +16,7 @@ import player.Player;
 import services.PlayerService;
 import services.Service;
 import services.SkillService;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.SkillUtil;
 import utils.Util;
 
@@ -206,7 +206,7 @@ public abstract class TrainingBoss extends Boss {
                 msg.cleanup();
                 this.zone = null;
             } catch (IOException e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
             TrainingService.gI().luyenTapEnd(playerAtt, (int) this.id);
         }

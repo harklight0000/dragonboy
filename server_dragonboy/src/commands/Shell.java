@@ -81,14 +81,14 @@ public class Shell implements Runnable {
             
             READER_REF.set(reader);
 
-            logger.NLogger.logInformation("Type 'help' or '--help' for help.");
+            logger.MyLogger.logInformation("Type 'help' or '--help' for help.");
 
             while (running.get() && DragonBoy.isRunning) {
                 String line;
                 try {
                     line = reader.readLine("> ");
                 } catch (UserInterruptException | EndOfFileException e) {
-                    logger.NLogger.logWarning("Shutdown signal received. Stopping server...");
+                    logger.MyLogger.logWarning("Shutdown signal received. Stopping server...");
                     cmd.execute("stop");
                     return; 
                 }
@@ -102,7 +102,7 @@ public class Shell implements Runnable {
             System.err.println("ConsoleShell I/O error: " + e.getMessage());
         } finally {
             READER_REF.set(null);
-            logger.NLogger.logInformation("Console shell is shutting down...");
+            logger.MyLogger.logInformation("Console shell is shutting down...");
         }
     }
 }

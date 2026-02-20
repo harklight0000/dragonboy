@@ -3,7 +3,7 @@ package combine;
 import consts.ConstNpc;
 import item.Item;
 import item.Item.ItemOption;
-import logger.NLogger;
+import logger.MyLogger;
 import player.Player;
 import services.CombineService;
 import services.player.InventoryService;
@@ -34,15 +34,15 @@ public class NangCapBongTai {
             for (Item item : player.combineNew.itemsCombine) {
                 if (item.template.id == ITEM_ID_BONG_TAI_C1) {
                     bongTai = item;
-                    NLogger.logDebug("hás bong tai");
+//                    MyLogger.logDebug("hás bong tai");
                 } else if (item.template.id == ITEM_ID_MANH_VO_BT) {
                     manhVo = item;
-                    NLogger.logDebug("hás manh vo bong tai");
+//                    MyLogger.logDebug("hás manh vo bong tai");
 
                 }
             }
 
-              NLogger.logDebug("manh vo bt so luong: " + manhVo.quantity);
+//              MyLogger.logDebug("manh vo bt so luong: " + manhVo.quantity);
             if (bongTai != null && manhVo != null) {
                 player.combineNew.goldCombine = GOLD_BONG_TAI;
                 player.combineNew.gemCombine = GEM_BONG_TAI;
@@ -52,7 +52,7 @@ public class NangCapBongTai {
                 npcSay += "|2|Tỉ lệ thành công: " + RATIO_BONG_TAI + "%\n";
 
                 int currentMvp = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, ITEM_ID_MANH_VO_BT);
-                NLogger.logDebug("manh vo bt: " + currentMvp);
+//                MyLogger.logDebug("manh vo bt: " + currentMvp);
                 if (currentMvp < REQUIRED_MANH_VO_FULL) {
                     npcSay += "|7|Cần " + REQUIRED_MANH_VO_FULL + " " + manhVo.template.name + "\n";
                     npcSay += "|2|Cần: " + Util.numberToMoney(GOLD_BONG_TAI) + " vàng\n";

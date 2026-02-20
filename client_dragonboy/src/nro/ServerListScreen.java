@@ -589,7 +589,7 @@ public final class ServerListScreen extends mScreen implements IActionListener {
          i = false;
          (I = new CommandLine(mResources.ga, this, 4, (Object)null)).x = main.GameCanvas.z / 2 - mScreen.cd / 2;
          I.y = main.GameCanvas.hh + 65;
-         super.cb = null;
+         super.right = null;
          if (!main.GameCanvas.isTouch) {
             I.x = main.GameCanvas.z / 2 - mScreen.cd / 2;
             I.y = main.GameCanvas.A - mScreen.ce - 1;

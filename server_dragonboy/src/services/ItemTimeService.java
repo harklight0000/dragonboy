@@ -9,7 +9,7 @@ import item.Item;
 import network.Message;
 import player.Fusion;
 import player.Player;
-import logger.NLogger;
+import logger.MyLogger;
 import services.player.InventoryService;
 
 import java.io.IOException;
@@ -154,7 +154,7 @@ public class ItemTimeService {
             msg.writer().writeByte(player.itemTime.isUseTDLT ? 1 : 0);
             player.sendMessage(msg);
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

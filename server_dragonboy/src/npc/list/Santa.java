@@ -1,6 +1,7 @@
 package npc.list;
 
 import consts.ConstNpc;
+import consts.ConstMap;
 import item.Item;
 import npc.Npc;
 import player.Player;
@@ -14,104 +15,79 @@ import java.util.List;
 
 public class Santa extends Npc {
 
+    private static final int ITEM_PHI_GIAO_DICH = 459;
+
     public Santa(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         super(mapId, status, cx, cy, tempId, avartar);
     }
 
     @Override
     public void openBaseMenu(Player player) {
-        if (canOpenNpc(player)) {
+        if (!canOpenNpc(player)) return;
 
-            Item pGG = InventoryService.gI().findItem(player.inventory.itemsBag, 459);
-            int soLuong = 0;
-            if (pGG != null) {
-                soLuong = pGG.quantity;
-            }
-            List<String> menu = new ArrayList<>(Arrays.asList(
-                    "Cửa hàng",
-                    "Mở rộng\nHành trang\nRương đồ",
-                    "Nhập mã\nquà tặng",
-                    "Cửa hàng\nHạn sử dụng",
-                    "Tiệm\nHớt tóc",
-                    "Danh\nhiệu",
-                    "Cửa hàng\nđặc biệt"
-            ));
+        List<String> menu = new ArrayList<>(Arrays.asList(
+                "Cửa hàng",
+                "Mở rộng\nHành trang\nRương đồ",
+                "Nhập mã\nquà tặng",
+                "Cửa hàng\nHạn sử dụng",
+                "Tiệm\nHớt tóc",
+                "Danh\nhiệu",
+                "Cửa hàng\nđặc biệt"
+        ));
 
-            if (soLuong >= 1) {
-                menu.add(1, "Giảm giá\n80%");
-            }
-
-            String[] menus = menu.toArray(new String[0]);
-
-            createOtherMenu(player, ConstNpc.BASE_MENU,
-                    "Xin chào, ta có một số vật phẩm đặc biệt cậu có muốn xem không?", menus);
+        if (hasDiscountTicket(player)) {
+            menu.add(1, "Giảm giá\n80%");
         }
 
+        this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                "Xin chào, ta có một số vật phẩm đặc biệt cậu có muốn xem không?", 
+                menu.toArray(new String[0]));
     }
 
     @Override
     public void confirmMenu(Player player, int select) {
-        if (canOpenNpc(player)) {
-            Item pGG = InventoryService.gI().findItem(player.inventory.itemsBag, 459);
-            int soLuong = 0;
-            if (pGG != null) {
-                soLuong = pGG.quantity;
-            }
+        if (!canOpenNpc(player) || !player.idMark.isBaseMenu()) return;
 
-            if (this.mapId == 5 || this.mapId == 13 || this.mapId == 20) {
-                if (player.idMark.isBaseMenu()) {
-                    switch (select) {
-                        case 0:
-                            ShopService.gI().opendShop(player, "SANTA", false);
-                            break;
-                        case 1:
-                            if (soLuong >= 1) {
-                                ShopService.gI().opendShop(player, "SANTA_GIAM_GIA", false);
-                            } else {
-                                ShopService.gI().opendShop(player, "SANTA_MO_RONG_HANH_TRANG", false);
-                            }
-                            break;
-                        case 2:
-                            if (soLuong >= 1) {
-                                ShopService.gI().opendShop(player, "SANTA_MO_RONG_HANH_TRANG", false);
-                            } else {
-                                Input.gI().createFormGiftCode(player);
-                            }
-                            break;
-                        case 3:
-                            if (soLuong >= 1) {
-                                Input.gI().createFormGiftCode(player);
-                            } else {
-                                ShopService.gI().opendShop(player, "SANTA_HAN_SU_DUNG", false);
-                            }
-                            break;
-                        case 4:
-                            if (soLuong >= 1) {
-                                ShopService.gI().opendShop(player, "SANTA_HAN_SU_DUNG", false);
-                            } else {
-                                ShopService.gI().opendShop(player, "SANTA_HEAD", false);
-                            }
-                            break;
-                        case 5:
-                            if (soLuong >= 1) {
-                                ShopService.gI().opendShop(player, "SANTA_HEAD", false);
-                            } else {
-                                ShopService.gI().opendShop(player, "SANTA_DANH_HIEU", false);
-                            }
-                            break;
-                        case 6:
-                            if (soLuong >= 1) {
-                                ShopService.gI().opendShop(player, "SANTA_DANH_HIEU", false);
-                            } else {
-                                ShopService.gI().opendShop(player, "SHOP_VIP", false);
-                            }
-                            break;
-                        case 7:
-                            ShopService.gI().opendShop(player, "SHOP_VIP", false);
-                            break;
-                    }
-                }
-            }
+        boolean isAtSantaMap = (this.mapId == ConstMap.DAO_KAME 
+                             || this.mapId == ConstMap.DAO_GURU 
+                             || this.mapId == ConstMap.VACH_NUI_DEN);
+        
+        if (!isAtSantaMap) return;
+
+        if (hasDiscountTicket(player)) {
+            handleConfirmWithDiscount(player, select);
+        } else {
+            handleConfirmNormal(player, select);
+        }
+    }
+
+    private boolean hasDiscountTicket(Player player) {
+        Item ticket = InventoryService.gI().findItem(player.inventory.itemsBag, ITEM_PHI_GIAO_DICH);
+        return ticket != null && ticket.quantity >= 1;
+    }
+
+    private void handleConfirmWithDiscount(Player player, int select) {
+        switch (select) {
+            case 0 -> ShopService.gI().opendShop(player, "SANTA", false);
+            case 1 -> ShopService.gI().opendShop(player, "SANTA_GIAM_GIA", false);
+            case 2 -> ShopService.gI().opendShop(player, "SANTA_MO_RONG_HAN_TRANG", false);
+            case 3 -> Input.gI().createFormGiftCode(player);
+            case 4 -> ShopService.gI().opendShop(player, "SANTA_HAN_SU_DUNG", false);
+            case 5 -> ShopService.gI().opendShop(player, "SANTA_HEAD", false);
+            case 6 -> ShopService.gI().opendShop(player, "SANTA_DANH_HIEU", false);
+            case 7 -> ShopService.gI().opendShop(player, "SHOP_VIP", false);
+        }
+    }
+
+    private void handleConfirmNormal(Player player, int select) {
+        switch (select) {
+            case 0 -> ShopService.gI().opendShop(player, "SANTA", false);
+            case 1 -> ShopService.gI().opendShop(player, "SANTA_MO_RONG_HAN_TRANG", false);
+            case 2 -> Input.gI().createFormGiftCode(player);
+            case 3 -> ShopService.gI().opendShop(player, "SANTA_HAN_SU_DUNG", false);
+            case 4 -> ShopService.gI().opendShop(player, "SANTA_HEAD", false);
+            case 5 -> ShopService.gI().opendShop(player, "SANTA_DANH_HIEU", false);
+            case 6 -> ShopService.gI().opendShop(player, "SHOP_VIP", false);
         }
     }
 }

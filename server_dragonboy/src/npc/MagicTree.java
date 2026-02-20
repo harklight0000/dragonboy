@@ -9,7 +9,7 @@ import services.player.InventoryService;
 import services.PlayerService;
 import services.ItemService;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 public class MagicTree {
@@ -118,7 +118,7 @@ public class MagicTree {
                 loadedMagicTreeToPlayer = true;
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -146,7 +146,7 @@ public class MagicTree {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -168,7 +168,7 @@ public class MagicTree {
                 player.sendMessage(msg);
                 msg.cleanup();
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
         }
     }

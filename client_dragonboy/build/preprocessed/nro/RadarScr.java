@@ -168,7 +168,7 @@ public final class RadarScr extends mScreen {
          }
       }
 
-      SoundMn.stopAll();
+      SettingMn.stopAll();
    }
 
    public final void update() {
@@ -344,7 +344,7 @@ public final class RadarScr extends mScreen {
          GameScreen.gI().switchToMe();
       }
 
-      SoundMn.stopAll();
+      SettingMn.stopAll();
    }
 
    private void c(int var1) {

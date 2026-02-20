@@ -15,7 +15,7 @@ import services.func.TransactionService;
 import services.shenron.SummonDragon;
 import services.shenron.SummonDragonNamek;
 import utils.Functions;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class Client implements Runnable {
             try {
                 SqlFetcher.executeUpdate("update account set last_time_logout = ? where id = ?", new Timestamp(System.currentTimeMillis()), session.userId);
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
         }
         DragonBoy.gI().disconnect(session);
@@ -141,14 +141,14 @@ public class Client implements Runnable {
     }
 
     public void close() {
-        NLogger.logWarning( "BEGIN KICK OUT SESSION " + players.size());
+        MyLogger.logWarning( "BEGIN KICK OUT SESSION " + players.size());
         while (!players.isEmpty()) {
             Player pl = players.remove(0);
             if (pl != null && pl.getSession() != null) {
                 this.kickSession(pl.getSession());
             }
         }
-        NLogger.logInformation("SUCCESSFUL");
+        MyLogger.logInformation("SUCCESSFUL");
     }
 
     private void update() {
@@ -185,7 +185,7 @@ public class Client implements Runnable {
             try {
                 update();
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
 //                e.printStackTrace();
             }
             Functions.sleep(Math.max(1000 - (System.currentTimeMillis() - st), 10));

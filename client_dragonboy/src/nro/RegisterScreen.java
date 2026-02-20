@@ -41,7 +41,7 @@ public final class RegisterScreen extends mScreen implements IActionListener {
 
    public final void switchToMe() {
       System.out.println("Res switch");
-      SoundMn.stopAll();
+      SettingMn.stopAll();
       this.tfUser.isFocus = true;
       this.tfNgay.isFocus = false;
       if (main.GameCanvas.isTouch) {
@@ -347,9 +347,9 @@ public final class RegisterScreen extends mScreen implements IActionListener {
    public final void updateKey() {
       if (!main.GameCanvas.isTouch) {
          if (this.tfUser.isFocus) {
-            super.cb = this.tfUser.j;
+            super.right = this.tfUser.j;
          } else {
-            super.cb = this.tfNgay.j;
+            super.right = this.tfNgay.j;
          }
       }
 

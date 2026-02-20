@@ -13,7 +13,7 @@ public final class ServerScreen extends mScreen implements IActionListener {
    private CommandLine j;
 
    public final void switchToMe() {
-      SoundMn.stopAll();
+      SettingMn.stopAll();
       super.switchToMe();
       this.i = new CommandLine("VIỆT NAM", this, 98, (Object)null);
       this.i.x = 0;

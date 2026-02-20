@@ -42,7 +42,7 @@ import map.Zone;
 import network.Message;
 import player.Player;
 import server.DragonBoy;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,7 +202,7 @@ public class BossManager implements Runnable {
                 default -> null;
             };
         } catch (Exception e) {
-            NLogger.logWarning(e.getMessage());
+            MyLogger.logWarning(e.getMessage());
             return null;
         }
     }

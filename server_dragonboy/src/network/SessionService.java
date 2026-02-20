@@ -11,7 +11,7 @@ import player.skill.NClass;
 import player.skill.Skill;
 import config.Config;
 import utils.FileIO;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -120,7 +120,7 @@ public class SessionService {
             session.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -196,7 +196,7 @@ public class SessionService {
             session.doSendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -204,7 +204,7 @@ public class SessionService {
         Message msg;
         try {
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -246,7 +246,7 @@ public class SessionService {
             }
             session.sendMessage(msg);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -264,7 +264,7 @@ public class SessionService {
             session.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -352,7 +352,7 @@ public class SessionService {
             session.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -437,7 +437,7 @@ public class SessionService {
                         session.sendMessage(msg);
                         msg.cleanup();
                     } catch (IOException e) {
-                        NLogger.logError(e);
+                        MyLogger.logError(e);
                     }
                 }
             }
@@ -447,7 +447,7 @@ public class SessionService {
             session.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

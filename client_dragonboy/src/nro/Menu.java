@@ -75,7 +75,7 @@ public final class Menu {
             }
          }
 
-         SoundMn.stopAll();
+         SettingMn.stopAll();
          this.G = new boolean[var1.size()];
 
          int var4;
@@ -161,7 +161,7 @@ public final class Menu {
                            this.z = 2;
                         }
 
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                      } else if (!GameScreen.gI().u() && !this.s && (main.GameCanvas.keyPressed[13] || mScreen.a(this.o))) {
                         if (this.c()) {
                            return;
@@ -172,7 +172,7 @@ public final class Menu {
                         }
 
                         this.F = true;
-                        SoundMn.stopAll();
+                        SettingMn.stopAll();
                      }
                   } else {
                      var1 = true;
@@ -220,7 +220,7 @@ public final class Menu {
                      main.GameCanvas.k();
                      this.F = true;
                      this.C = true;
-                     SoundMn.stopAll();
+                     SettingMn.stopAll();
                   }
                } else {
                   int var2;
@@ -427,7 +427,7 @@ public final class Menu {
                }
 
                if (this.b >= 0 && (var3 = (CommandLine)this.f.elementAt(this.b)) != null) {
-                  SoundMn.stopAll();
+                  SettingMn.stopAll();
                   var3.performAction();
                }
             }

@@ -26,7 +26,7 @@ import services.RadarService;
 import player.skill.NClass;
 import player.skill.Skill;
 import task.*;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.io.*;
 import java.sql.*;
@@ -440,7 +440,7 @@ public final class GameDataDAO {
                 offset += batchSize;
             }
         } catch (SQLException e) {
-            NLogger.logWarning("Error loading item templates: " + e.getMessage());
+            MyLogger.logWarning("Error loading item templates: " + e.getMessage());
         }
     }
 

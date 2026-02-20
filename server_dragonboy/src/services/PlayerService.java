@@ -9,7 +9,7 @@ import player.Player;
 import server.Client;
 import commands.IngameCommand;
 import services.func.TransactionService;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.time.Instant;
@@ -35,7 +35,7 @@ public class PlayerService {
     /**
      *
      * @param player
-     * @param type  0 là cộng sm, 1 cộng tn, 2 là cộng cả 2
+     * @param type 0 là cộng sm, 1 cộng tn, 2 là cộng cả 2
      * @param param số tn cần cộng
      */
     public void sendTNSM(Player player, byte type, long param) {
@@ -78,7 +78,7 @@ public class PlayerService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -90,7 +90,7 @@ public class PlayerService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -135,7 +135,7 @@ public class PlayerService {
             msg.writer().writeInt(player.inventory.ruby);//ruby
             player.sendMessage(msg);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -206,7 +206,7 @@ public class PlayerService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -218,7 +218,7 @@ public class PlayerService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -252,7 +252,7 @@ public class PlayerService {
             playerBaned.idMark.setBan(true);
         } catch (Exception e) {
         }
-    
+
     }
 
     public void hoiSinh(Player player) {
@@ -322,49 +322,74 @@ public class PlayerService {
             DailyGiftService.addAndReset(player);
         }
     }
-    public void chat(Player player, String text){
+
+    public void chat(Player player, String text) {
+ 
         if (TransactionService.gI().check(player)) {
             Service.gI().sendThongBao(player, "Không thể thực hiện");
             return;
         }
+
+     
+        boolean isCommand = false;
+
         if (text.startsWith("ten con la ")) {
             PetService.gI().changeNamePet(player, text.replaceAll("ten con la ", ""));
+            isCommand = true;
         }
         if (player.pet != null) {
             switch (text) {
-                case "di theo", "follow" -> player.pet.changeStatus(Pet.FOLLOW);
-                case "bao ve", "protect" -> player.pet.changeStatus(Pet.PROTECT);
-                case "tan cong", "attack" -> player.pet.changeStatus(Pet.ATTACK);
-                case "ve nha", "go home" -> player.pet.changeStatus(Pet.GOHOME);
-                case "bien hinh" -> player.pet.transform();
+                case "di theo", "follow" -> {
+                    player.pet.changeStatus(Pet.FOLLOW);
+                    isCommand = true;
+                }
+                case "bao ve", "protect" -> {
+                    player.pet.changeStatus(Pet.PROTECT);
+                    isCommand = true;
+                }
+                case "tan cong", "attack" -> {
+                    player.pet.changeStatus(Pet.ATTACK);
+                    isCommand = true;
+                }
+                case "ve nha", "go home" -> {
+                    player.pet.changeStatus(Pet.GOHOME);
+                    isCommand = true;
+                }
+                case "bien hinh" -> {
+                    player.pet.transform();
+                    isCommand = true;
+                }
             }
         }
-        if(!player.isAdmin()){
-            return;
-        }
-        boolean handled = IngameCommand.gI().check(player, text);
-        if (!handled) {
-//            Service.gI().sendThongBao(player, "Unknown admin command");
-        }
-        Service.gI().chat(player, text);
 
+        if (player.isAdmin()) {
+            boolean handled = IngameCommand.gI().check(player, text);
+            if (handled) {
+                return;
+            }
+        }
 
+    
+        if (!isCommand) {
+            Service.gI().chat(player, text);
+        }
     }
     public final int constMoThanhVien = 10000;
-    public boolean setActive(Player pl){
-        try{
+
+    public boolean setActive(Player pl) {
+        try {
             pl.getSession().vnd -= constMoThanhVien;
             pl.getSession().actived = true;
             PlayerDAO.updateActive(pl, constMoThanhVien);
             return (!pl.getSession().actived && pl.getSession().vnd >= 10000);
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return false;
     }
-    public boolean canActive(Player pl){
+
+    public boolean canActive(Player pl) {
         return (!pl.getSession().actived && pl.getSession().vnd >= 10000);
     }
-
 
 }

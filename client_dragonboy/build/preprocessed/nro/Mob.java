@@ -248,7 +248,7 @@ public class Mob implements IMapObject {
          }
 
          int var1;
-         if (!main.GameCanvas.a && this.p != 1 && this.p != 0 && !main.GameCanvas.a && main.GameCanvas.v % (15 + (this.mobId << 1)) == 0) {
+         if (!main.GameCanvas.isLowGraphic && this.p != 1 && this.p != 0 && !main.GameCanvas.isLowGraphic && main.GameCanvas.v % (15 + (this.mobId << 1)) == 0) {
             for(var1 = 0; var1 < GameScreen.vCharInMap.size(); ++var1) {
                Char var2;
                if ((var2 = (Char)GameScreen.vCharInMap.elementAt(var1)) != null && var2.ci && var2.as == 32) {
@@ -700,7 +700,7 @@ public class Mob implements IMapObject {
       if (this.ah < var1.length) {
          this.a(var1);
          if (this.x >= GameScreen.cmx && this.x <= GameScreen.cmx + main.GameCanvas.z && this.s == 0 && main.GameCanvas.v % 2 == 0) {
-            SoundMn.stopAll();
+            SettingMn.stopAll();
          }
       }
 

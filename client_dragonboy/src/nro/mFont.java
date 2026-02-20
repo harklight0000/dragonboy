@@ -191,7 +191,7 @@ public final class mFont {
             }
 
             if (var3 >= 0) {
-                if (!main.GameCanvas.a) {
+                if (!main.GameCanvas.isLowGraphic) {
                     var1.setColor(var6.M, this.O[var3][0], this.O[var3][1], this.O[var3][2], this.O[var3][3], 0, var5 + 1, var4, 20);
                     var1.setColor(var6.M, this.O[var3][0], this.O[var3][1], this.O[var3][2], this.O[var3][3], 0, var5, var4 + 1, 20);
                 }

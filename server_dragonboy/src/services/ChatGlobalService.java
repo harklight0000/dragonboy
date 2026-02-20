@@ -3,7 +3,7 @@ package services;
 import network.Message;
 import player.Player;
 import server.Maintenance;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.TimeUtil;
 import utils.Util;
 
@@ -106,7 +106,7 @@ public class ChatGlobalService implements Runnable {
                 }
                 Thread.sleep(1000);
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
         }
     }

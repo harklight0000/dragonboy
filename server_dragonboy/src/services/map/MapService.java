@@ -9,7 +9,7 @@ import network.Message;
 import player.Player;
 import server.GameData;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.io.DataInputStream;
@@ -64,7 +64,7 @@ public class MapService {
                 }
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
         return tileIndexTileType;
     }
@@ -305,7 +305,7 @@ public class MapService {
                 zoneJoin = map.zones.get(zoneId);
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
         return zoneJoin;
     }
@@ -427,7 +427,7 @@ public class MapService {
             Service.gI().sendMessAnotherNotMeInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

@@ -10,7 +10,7 @@ import services.PlayerService;
 import server.DragonBoy;
 import services.ItemService;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.util.ArrayList;
@@ -297,7 +297,7 @@ public class Trade {
                 player1.sendMessage(msg);
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();

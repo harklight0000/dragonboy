@@ -6,7 +6,7 @@ import boss.Training.TrainingBoss;
 import consts.ConstAchievement;
 import consts.ConstNpc;
 import consts.ConstPlayer;
-import logger.NLogger;
+import logger.MyLogger;
 import network.SessionService;
 import database.SqlFetcher;
 import item.Item;
@@ -358,7 +358,7 @@ public class Service {
             sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -448,7 +448,7 @@ public class Service {
                 player.sendMessage(msg);
                 msg.cleanup();
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
         }
     }
@@ -574,7 +574,7 @@ public class Service {
             pl.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -749,7 +749,7 @@ public class Service {
             PlayerService.gI().sendInfoHpMp(pl);
             AchievementService.gI().checkDoneTask(pl, ConstAchievement.THANH_HOI_SINH);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -780,7 +780,7 @@ public class Service {
 
             Send_Info_NV(pl);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -836,7 +836,7 @@ public class Service {
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -864,7 +864,7 @@ public class Service {
             pl.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -1068,7 +1068,7 @@ public class Service {
             }
             pl.idMark.setLastTimeChangeFlag(System.currentTimeMillis());
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -1206,7 +1206,7 @@ public class Service {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -1279,7 +1279,7 @@ public class Service {
                 msg.cleanup();
 
             } catch (Exception e) {
-                NLogger.logError(e);
+                MyLogger.logError(e);
             }
         }
     }
@@ -1293,7 +1293,7 @@ public class Service {
             pl.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -1361,7 +1361,7 @@ public class Service {
                 return;
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -1428,7 +1428,7 @@ public class Service {
                         Service.gI().sendThongBao(player, "Đổi mật khẩu thành công!");
                     } catch (Exception ex) {
                         Service.gI().sendThongBao(player, "Đổi mật khẩu thất bại!");
-                        NLogger.logError(ex);
+                        MyLogger.logError(ex);
                     }
                 } else {
                     Service.gI().sendThongBao(player, "Mật khẩu nhập lại không đúng!");
@@ -1485,7 +1485,7 @@ public class Service {
             session.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -1728,7 +1728,7 @@ public class Service {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -2175,7 +2175,7 @@ public class Service {
             msg.writer().writeUTF(text);
             player.sendMessage(msg);
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();
@@ -2190,7 +2190,7 @@ public class Service {
             msg.writer().writeUTF(text);
             player.sendMessage(msg);
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();
@@ -2205,7 +2205,7 @@ public class Service {
             msg.writer().writeUTF(text);
             pl.sendMessage(msg);
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();
@@ -2220,7 +2220,7 @@ public class Service {
             msg.writer().writeUTF(text);
             session.sendMessage(msg);
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();

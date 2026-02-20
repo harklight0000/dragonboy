@@ -8,7 +8,7 @@ import services.map.ChangeMapService;
 import network.Message;
 import player.Player;
 import services.TaskService;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class TauPayPay extends TrainingBoss {
             msg.cleanup();
             this.zone = null;
         } catch (IOException e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

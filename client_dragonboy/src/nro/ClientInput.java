@@ -70,7 +70,7 @@ public final class ClientInput extends mScreen implements IActionListener {
             }
 
             if (!main.GameCanvas.isTouch) {
-                var3.cb = var3.tf[0].j;
+                var3.right = var3.tf[0].j;
             }
         }
 
@@ -141,7 +141,7 @@ public final class ClientInput extends mScreen implements IActionListener {
                 if (this.j == var1) {
                     this.tf[var1].isFocus = true;
                     if (!main.GameCanvas.isTouch) {
-                        super.cb = this.tf[var1].j;
+                        super.right = this.tf[var1].j;
                     }
                 } else {
                     this.tf[var1].isFocus = false;

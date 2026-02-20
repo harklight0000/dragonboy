@@ -72,10 +72,10 @@ public final class Teleport {
       }
 
       if (var1 > GameScreen.cmx && var1 < GameScreen.cmx + main.GameCanvas.z && this.i > 100) {
-         SoundMn.stopAll();
-         SoundMn.stopAll();
+         SettingMn.stopAll();
+         SettingMn.stopAll();
          this.p = true;
-         SoundMn.stopAll();
+         SettingMn.stopAll();
       }
 
    }
@@ -191,7 +191,7 @@ public final class Teleport {
          if (ResLog.abs(this.c - this.i) < 50 && TileMap.a(this.b, this.c, 2)) {
             this.v = true;
             if (this.k < 3) {
-               SoundMn.stopAll();
+               SettingMn.stopAll();
                if (this.c % 24 != 0) {
                   this.c -= this.c % 24;
                }
@@ -251,7 +251,7 @@ public final class Teleport {
             this.e = true;
          } else {
             if (this.r == 14 && this.p) {
-               SoundMn.stopAll();
+               SettingMn.stopAll();
             }
 
             if (this.r > 0 && this.g == 0) {

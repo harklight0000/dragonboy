@@ -9,7 +9,7 @@ import services.map.MapService;
 import services.map.NpcService;
 import map.Zone;
 import player.Player;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import java.util.concurrent.Executors;
@@ -95,7 +95,7 @@ public class TrainingService {
                 }
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
         return null;
     }

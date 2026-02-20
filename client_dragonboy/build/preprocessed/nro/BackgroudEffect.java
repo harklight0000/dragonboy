@@ -315,7 +315,7 @@ public final class BackgroudEffect {
       if (mSystem.d == 1) {
          S = null;
          T = null;
-      } else if (main.GameCanvas.a) {
+      } else if (main.GameCanvas.isLowGraphic) {
          S = null;
          T = null;
       } else {
@@ -341,7 +341,7 @@ public final class BackgroudEffect {
 
    private static void g(mGraphics var0) {
       if (mSystem.d != 1) {
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             if (e != 0) {
                if (S != null) {
                   for(int var1 = 0; var1 < e; ++var1) {
@@ -356,7 +356,7 @@ public final class BackgroudEffect {
 
    public static void a(mGraphics var0) {
       if (mSystem.d != 1) {
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             if (d) {
                if (T != null) {
                   for(int var1 = V; var1 < TileMap.c; var1 += W) {
@@ -421,7 +421,7 @@ public final class BackgroudEffect {
    }
 
    public static void a(int var0) {
-      if (!main.GameCanvas.a) {
+      if (!main.GameCanvas.isLowGraphic) {
          BackgroudEffect var1 = new BackgroudEffect(var0);
          a.addElement(var1);
       }
@@ -850,7 +850,7 @@ public final class BackgroudEffect {
                   ++var2;
                }
             case 13:
-               if (mSystem.d != 1 && !main.GameCanvas.a && e > 0) {
+               if (mSystem.d != 1 && !main.GameCanvas.isLowGraphic && e > 0) {
                   int var6 = main.GameCanvas.currentScreen == GameScreen.gI() ? TileMap.c : GameScreen.cmx + main.GameCanvas.z;
 
                   for(var2 = 0; var2 < e; ++var2) {
@@ -864,7 +864,7 @@ public final class BackgroudEffect {
                }
                break;
             case 14:
-               if (mSystem.d != 1 && !main.GameCanvas.a && d && --V < -W) {
+               if (mSystem.d != 1 && !main.GameCanvas.isLowGraphic && d && --V < -W) {
                   V = 0;
                }
             }

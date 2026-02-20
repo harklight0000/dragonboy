@@ -17,7 +17,7 @@ import player.Pet;
 import player.Player;
 import services.func.EffectMapService;
 import player.skill.Skill;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.SkillUtil;
 import utils.Util;
 
@@ -830,7 +830,7 @@ public class SkillService {
                     msg.writer().writeByte(36);
                     Service.gI().sendMessAllPlayerInMap(plAtt, msg);
                 } catch (Exception e) {
-                    NLogger.logError(e);
+                    MyLogger.logError(e);
                 } finally {
                     if (msg != null) {
                         msg.cleanup();
@@ -911,7 +911,7 @@ public class SkillService {
                 plAtt.fightMabu.changePoint((byte) 5);
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();

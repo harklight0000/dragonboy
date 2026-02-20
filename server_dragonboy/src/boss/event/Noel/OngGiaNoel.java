@@ -10,7 +10,7 @@ import map.ItemMap;
 import services.map.ChangeMapService;
 import player.Player;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 import static consts.BossType.CHRISTMAS_EVENT;
@@ -64,11 +64,11 @@ public class OngGiaNoel extends Boss {
                 st = System.currentTimeMillis();
                 timeLeave = Util.nextInt(100000, 300000);
             } catch (Exception e) {
-                NLogger.logWarning(this.data[0].getName() + ": Lỗi đang tiến hành REST");
+                MyLogger.logWarning(this.data[0].getName() + ": Lỗi đang tiến hành REST");
                 this.changeStatus(BossStatus.REST);
             }
         } else {
-            NLogger.logWarning(this.data[0].getName() + ": Lỗi map đang tiến hành RESPAWN");
+            MyLogger.logWarning(this.data[0].getName() + ": Lỗi map đang tiến hành RESPAWN");
             this.changeStatus(BossStatus.RESPAWN);
         }
     }

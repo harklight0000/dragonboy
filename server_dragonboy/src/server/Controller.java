@@ -36,13 +36,104 @@ import services.func.TransactionService;
 import services.func.UseItem;
 import shop.ShopService;
 import player.skill.Skill;
-import logger.NLogger;
+import logger.MyLogger;
 import services.TaskService;
 import utils.Util;
 
 import java.io.IOException;
 
 public class Controller implements IMessageHandler {
+
+    private static final byte CMD_CONSIGN_SHOP = -100;
+    private static final byte CMD_RADAR = 127;
+    private static final byte CMD_SPECIAL_MAP_CHANGE = -105;
+    private static final byte CMD_LUCKY_ROUND_1 = 42;
+    private static final byte CMD_LUCKY_ROUND_2 = -127;
+    private static final byte CMD_INPUT = -125;
+    private static final byte CMD_INTRINSIC = 112;
+    private static final byte CMD_MAGIC_TREE = -34;
+    private static final byte CMD_ENEMY = -99;
+    private static final byte CMD_YARDRAT_MOVE = 18;
+    private static final byte CMD_PRIVATE_CHAT = -72;
+    private static final byte CMD_FRIEND = -80;
+    private static final byte CMD_PVP = -59;
+    private static final byte CMD_TRANSACTION = -86;
+    private static final byte CMD_PET_INFO = -107;
+    private static final byte CMD_PET_STATUS = -108;
+    private static final byte CMD_BUY_ITEM = 6;
+    private static final byte CMD_SELL_ITEM = 7;
+    private static final byte CMD_ZONE_UI = 29;
+    private static final byte CMD_CHANGE_ZONE = 21;
+    private static final byte CMD_GLOBAL_CHAT = -71;
+    private static final byte CMD_PLAYER_MENU = -79;
+    private static final byte CMD_SKILL_SHORTCUT = -113;
+    private static final byte CMD_NEW_GAME = -101;
+    private static final byte CMD_FLAG_UI = -103;
+    private static final byte CMD_MOVE = -7;
+    private static final byte CMD_DOWNLOAD_DATA = -74;
+    private static final byte CMD_COMBINE = -81;
+    private static final byte CMD_UPDATE_DATA = -87;
+    private static final byte CMD_ICON = -67;
+    private static final byte CMD_IMAGE_BY_NAME = 66;
+    private static final byte CMD_EFFECT_TEMPLATE = -66;
+    private static final byte CMD_FLAG_CHOOSE = -62;
+    private static final byte CMD_FLAG_EFFECT = -63;
+    private static final byte CMD_ITEM_BG_TEMPLATE = -32;
+    private static final byte CMD_NPC_DAU_THAN = 22;
+    private static final byte CMD_CHANGE_MAP_WAYPOINT = -33;
+    private static final byte CMD_CHANGE_MAP_WAYPOINT_2 = -23;
+    private static final byte CMD_USE_SKILL = -45;
+    private static final byte CMD_CLAN_INFO = -46;
+    private static final byte CMD_CLAN_MESSAGE = -51;
+    private static final byte CMD_CLAN_DONATE = -54;
+    private static final byte CMD_CLAN_JOIN = -49;
+    private static final byte CMD_CLAN_MEMBER_LIST = -50;
+    private static final byte CMD_CLAN_REMOTE = -56;
+    private static final byte CMD_CLAN_LIST = -47;
+    private static final byte CMD_CLAN_LEAVE = -55;
+    private static final byte CMD_CLAN_INVITE = -57;
+    private static final byte CMD_USE_ITEM = -40;
+    private static final byte CMD_CAPTION = -41;
+    private static final byte CMD_DO_ITEM = -43;
+    private static final byte CMD_CHANGE_MAP_SPECIAL = -91;
+    private static final byte CMD_FINISH_LOAD_MAP = -39;
+    private static final byte CMD_MOB_TEMPLATE = 11;
+    private static final byte CMD_CHAT = 44;
+    private static final byte CMD_SELECT_MENU = 32;
+    private static final byte CMD_OPEN_MENU_NPC = 33;
+    private static final byte CMD_SELECT_SKILL = 34;
+    private static final byte CMD_ATTACK_MOB = 54;
+    private static final byte CMD_ATTACK_PLAYER = -60;
+    private static final byte CMD_VERSION_RES = -27;
+    private static final byte CMD_IMAGE_VERSION = -111;
+    private static final byte CMD_PICK_ITEM = -20;
+    private static final byte CMD_NOT_MAP = -28;
+    private static final byte CMD_NOT_LOGIN = -29;
+    private static final byte CMD_SUB_COMMAND = -30;
+    private static final byte CMD_GO_HOME = -15;
+    private static final byte CMD_REVIVE = -16;
+    private static final byte CMD_PROTECT_ACCOUNT = -104;
+    private static final byte CMD_SUPER_RANK = -118;
+    private static final byte CMD_FINISH_UPDATE = -38;
+    private static final byte CMD_CONFIRM_ACHIEVEMENT = -76;
+    private static final byte CMD_CHECK_MOVE = -78;
+
+    private static final byte ACTION_CREATE_CHAR = 2;
+    private static final byte ACTION_UPDATE_MAP = 6;
+    private static final byte ACTION_UPDATE_SKILL = 7;
+    private static final byte ACTION_UPDATE_ITEM = 8;
+    private static final byte ACTION_MAP_TEMP = 10;
+    private static final byte ACTION_INIT_INFO = 13;
+
+    private static final byte ACTION_LOGIN = 0;
+    private static final byte ACTION_CLIENT_INFO = 2;
+
+    private static final byte SUB_CMD_INCREASE_POINT = 16;
+    private static final byte SUB_CMD_SUB_MENU = 64;
+
+    private static final int MAX_ERRORS_LOG = 5;
+    private static final int MIN_CHAR_NAME_LENGTH = 5;
+    private static final int MAX_CHAR_NAME_LENGTH = 10;
 
     private static Controller instance;
     private int errors;
@@ -58,780 +149,522 @@ public class Controller implements IMessageHandler {
     public void onMessage(ISession s, Message _msg) {
         long st = System.currentTimeMillis();
         MySession _session = (MySession) s;
-        Player player = null;
-        try {
-            player = _session.player;
-            byte cmd = _msg.command;
-            switch (cmd) {
-                case -100:
-                    if (player == null) {
-                        return;
-                    }
-                    if (TransactionService.gI().check(player)) {
-                        Service.gI().sendThongBao(player, "Không thể thực hiện");
-                        return;
-                    }
-                    if (player.baovetaikhoan) {
-                        Service.gI().sendThongBao(player, "Chức năng bảo vệ đã được bật. Bạn vui lòng kiểm tra lại");
-                        return;
-                    }
-                    byte action = _msg.reader().readByte();
-                    switch (action) {
-                        case 0:
-                            short idItem = _msg.reader().readShort();
-                            byte moneyType = _msg.reader().readByte();
-                            int money = _msg.reader().readInt();
-                            int quantity;
-                            if (player.getSession().version >= 222) {
-                                quantity = _msg.reader().readInt();
-                            } else {
-                                quantity = _msg.reader().readByte();
-                            }
-                            if (quantity > 0) {
-                                ConsignShopService.gI().KiGui(player, idItem, money, moneyType, quantity);
-                            }
-                            break;
-                        case 1:
-                        case 2:
-                            idItem = _msg.reader().readShort();
-                            ConsignShopService.gI().claimOrDel(player, action, idItem);
-                            break;
-                        case 3:
-                            idItem = _msg.reader().readShort();
-                            _msg.reader().readByte();
-                            _msg.reader().readInt();
-                            ConsignShopService.gI().buyItem(player, idItem);
-                            break;
-                        case 4:
-                            moneyType = _msg.reader().readByte();
-                            money = _msg.reader().readByte();
-                            ConsignShopService.gI().openShopKyGui(player, moneyType, money);
-                            break;
-                        case 5:
-                            idItem = _msg.reader().readShort();
-                            ConsignShopService.gI().upItemToTop(player, idItem);
-                            break;
-                        default:
-                            Service.gI().sendThongBao(player, "Không thể thực hiện");
-                            break;
-                    }
-                    break;
+        Player player = _session.player;
 
-                case 127:
-                    if (player != null) {
-                        byte actionRadar = _msg.reader().readByte();
-                        switch (actionRadar) {
-                            case 0:
-                                RadarService.gI().sendRadar(player, player.Cards);
-                                break;
-                            case 1:
-                                short idC = _msg.reader().readShort();
-                                Card card = player.Cards.stream().filter(r -> r != null && r.Id == idC).findFirst().orElse(null);
-                                if (card != null) {
-                                    if (card.Level == 0) {
-                                        return;
-                                    }
-                                    if (card.Used == 0) {
-                                        if (player.Cards.stream().anyMatch(c -> c != null && c.Used == 1)) {
-                                            Service.gI().sendThongBao(player, "Số thẻ sử dụng đã đạt tối đa");
-                                            return;
-                                        }
-                                        card.Used = 1;
-                                    } else {
-                                        card.Used = 0;
-                                    }
-                                    RadarService.gI().Radar1(player, idC, card.Used);
-                                    Service.gI().point(player);
-                                }
-                                break;
-                        }
-                    }
-                    break;
-                case -105:
-                    if (player != null) {
-                        if (player.type == 0 && player.maxTime == 30) {
-                            ChangeMapService.gI().changeMapBySpaceShip(player, 102, -1, Util.nextInt(60, 200));
-                            player.idMark.setGotoFuture(false);
-                        } else if (player.type == 1 && player.maxTime == 5) {
-                            if (player.idMark != null && player.idMark.isGoToBDKB()) {
-                                ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 135, -1), 35, 35);
-                                player.idMark.setGoToBDKB(false);
-                            }
-                        } else if (player.type == 2 && player.maxTime == 5) {
-                            if (MapService.gI().isMapHanhTinhThucVat(player.zone.map.mapId)) {
-                                ChangeMapService.gI().changeMap(player, 80, -1, -1, 5);
-                            } else {
-                                ChangeMapService.gI().changeMap(player, 160, -1, -1, 5);
-                            }
-                        } else if (player.type == 3 && player.maxTime == 5) {
-                            ChangeMapService.gI().changeMap(player, player.idMark.getZoneKhiGasHuyDiet(), player.idMark.getXMapKhiGasHuyDiet(), player.idMark.getYMapKhiGasHuyDiet());
-                            player.idMark.setZoneKhiGasHuyDiet(null);
-                        } else if (player.type == 4 && player.maxTime == 5) {
-                            if (player.idMark != null && player.idMark.isGoToKGHD()) {
-                                ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 149, -1), 100 + (Util.nextInt(-10, 10)), 336);
-                                player.idMark.setGoToKGHD(false);
-                            }
-                        } else if (player.type == 5 && player.maxTime == 5) {
-                            ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 156, -1), 100 + (Util.nextInt(-10, 10)), 336);
-                        }
-                    }
-                    break;
-                case 42:
-                case -127:
-                    if (player != null) {
-                        LuckyRound.gI().readOpenBall(player, _msg);
-                    }
-                    break;
-                case -125:
-                    if (player != null) {
-                        Input.gI().doInput(player, _msg);
-                    }
-                    break;
-                case 112:
-                    if (player != null) {
-                        IntrinsicService.gI().showMenu(player);
-                    }
-                    break;
-                case -34:
-                    if (player != null) {
-                        switch (_msg.reader().readByte()) {
-                            case 1:
-                                player.magicTree.openMenuTree();
-                                break;
-                            case 2:
-                                player.magicTree.loadMagicTree();
-                                break;
-                        }
-                    }
-                    break;
-                case -99:
-                    if (player != null) {
-                        FriendAndEnemyService.gI().controllerEnemy(player, _msg);
-                    }
-                    break;
-                case 18:
-                    if (player != null) {
-                        player.changeMapVIP = true;
-                        FriendAndEnemyService.gI().goToPlayerWithYardrat(player, _msg);
-                    }
-                    break;
-                case -72:
-                    if (player != null) {
-                        FriendAndEnemyService.gI().chatPrivate(player, _msg);
-                    }
-                    break;
-                case -80:
-                    if (player != null) {
-                        FriendAndEnemyService.gI().controllerFriend(player, _msg);
-                    }
-                    break;
-                case -59:
-                    if (player != null) {
-                        if (player.baovetaikhoan) {
-                            Service.gI().sendThongBao(player, "Chức năng bảo vệ đã được bật. Bạn vui lòng kiểm tra lại");
-                            return;
-                        }
-                        PVPService.gI().controllerThachDau(player, _msg);
-                    }
-                    break;
-                case -86:
-                    if (player != null) {
-                        TransactionService.gI().controller(player, _msg);
-                    }
-                    break;
-                case -107:
-                    if (player != null) {
-                        Service.gI().showInfoPet(player);
-                    }
-                    break;
-                case -108:
-                    if (player != null && player.pet != null) {
-                        player.pet.changeStatus(_msg.reader().readByte());
-                    }
-                    break;
-                case 6: //buy item
-                    if (player != null && !Maintenance.isRunning) {
-                        if (TransactionService.gI().check(player)) {
-                            Service.gI().sendThongBao(player, "Không thể thực hiện");
-                            return;
-                        }
-                        if (player.baovetaikhoan) {
-                            Service.gI().sendThongBao(player, "Chức năng bảo vệ đã được bật. Bạn vui lòng kiểm tra lại");
-                            return;
-                        }
-                        byte typeBuy = _msg.reader().readByte();
-                        int tempId = _msg.reader().readShort();
-                        ShopService.gI().takeItem(player, typeBuy, tempId);
-                    }
-                    break;
-                case 7: //sell item
-                    if (player != null && !Maintenance.isRunning) {
-                        if (TransactionService.gI().check(player)) {
-                            Service.gI().sendThongBao(player, "Không thể thực hiện");
-                            return;
-                        }
-                        if (player.baovetaikhoan) {
-                            Service.gI().sendThongBao(player, "Chức năng bảo vệ đã được bật. Bạn vui lòng kiểm tra lại");
-                            return;
-                        }
-                        action = _msg.reader().readByte();
-                        if (action == 0) {
-                            ShopService.gI().showConfirmSellItem(player, _msg.reader().readByte(),
-                                    _msg.reader().readShort());
-                        } else {
-                            ShopService.gI().sellItem(player, _msg.reader().readByte(),
-                                    _msg.reader().readShort());
-                        }
-                    }
-                    break;
-                case 29:
-                    if (player != null) {
-                        ChangeMapService.gI().openZoneUI(player);
-                    }
-                    break;
-                case 21:
-                    if (player != null) {
-                        int zoneId = _msg.reader().readByte();
-                        ChangeMapService.gI().changeZone(player, zoneId);
-                    }
-                    break;
-                case -71:
-                    if (player != null) {
-                        if (TransactionService.gI().check(player)) {
-                            Service.gI().sendThongBao(player, "Không thể thực hiện");
-                            return;
-                        }
-                        ChatGlobalService.gI().chat(player, _msg.reader().readUTF());
-                    }
-                    break;
-                case -79:
-                    if (player != null) {
-                        Service.gI().getPlayerMenu(player, _msg.reader().readInt());
-                    }
-                    break;
-                case -113:
-                    if (player != null) {
-                        for (int i = 0; i < 10; i++) {
-                            try {
-                                player.playerSkill.skillShortCut[i] = _msg.reader().readByte();
-                            } catch (IOException e) {
-                                player.playerSkill.skillShortCut[i] = -1;
-                            }
-                        }
-                        player.playerSkill.sendSkillShortCut();
-                    }
-                    break;
-                case -101:
-                    newGame(_session, _msg);
-                    break;
-                case -103:
-                    if (player != null) {
-                        byte act = _msg.reader().readByte();
-                        switch (act) {
-                            case 0 -> Service.gI().openFlagUI(player);
-                            case 1 -> Service.gI().chooseFlag(player, _msg.reader().readByte());
-                        }
-                    }
-                    break;
-                case -7:
-                    if (player != null) {
-                        if (player.isDie()) {
-                            Service.gI().charDie(player);
-                            return;
-                        }
-                        if (player.effectSkill.isHaveEffectSkill()) {
-                            return;
-                        }
-                        int toX = player.location.x;
-                        int toY = player.location.y;
-                        try {
-                            byte b = _msg.reader().readByte();
-                            toX = _msg.reader().readShort();
-                            try {
-                                toY = _msg.reader().readShort();
-                            } catch (IOException ex) {
-                            }
-                            if (player.zone != null && MapService.gI().isMapBlackBallWar(player.zone.map.mapId)
-                                    && Util.getDistance(player.location.x, player.location.y, toX, toY) > 500) {
-                                return;
-                            }
-                            if (b == 1) {
-                                AchievementService.gI().checkDoneTaskFly(player, player.location.x - toX);
-                            }
-                        } catch (IOException e) {
-                        }
-                        PlayerService.gI().playerMove(player, toX, toY);
-                    }
-                    break;
-                case -74://client download data
-                    String ip = _session.ipAddress;
-                    byte type = _msg.reader().readByte();
-                    if (type == 1) {
-                        SessionService.sendSizeRes(_session);
-                    } else if (type == 2) {
-                        SessionService.sendRes(_session);
-                    }
-                    break;
-                case -81:
-                    if (player != null) {
-                        try {
-                            _msg.reader().readByte();
-                            int[] indexItem = new int[_msg.reader().readByte()];
-                            for (int i = 0; i < indexItem.length; i++) {
-                                indexItem[i] = _msg.reader().readByte();
-                            }
-                            CombineService.gI().showInfoCombine(player, indexItem);
-                        } catch (IOException e) {
-                        }
-                    }
-                    break;
-                case -87:
-                    SessionService.updateData(_session);
-                    break;
-                case -67:
-                    int id = _msg.reader().readInt();
-                    SessionService.sendIcon(_session, id);
-                    break;
-                case 66:
-                    SessionService.sendImageByName(_session, _msg.reader().readUTF());
-                    break;
-                case -66:
-                    if (player != null) {
-                        int effId = _msg.reader().readShort();
-                        int idT = effId;
-                        if (player.zone == null) {
-                            break;
-                        }
-                        int shenronType = player.zone.shenronType;
-                        if (idT == 25 && shenronType != -1 && player.zone.map.mapId != 0 && player.zone.map.mapId != 7 && player.zone.map.mapId != 14) {
-                            idT = shenronType == 1 ? 59 : shenronType == 0 ? 59 : 60;
-                        }
-                        SessionService.sendEffectTemplate(_session, effId, idT);
-                    }
-                    break;
-                case -62:
-                    if (player != null) {
-                        FlagBagService.gI().sendIconFlagChoose(player, _msg.reader().readByte());
-                    }
-                    break;
-                case -63:
-                    if (player != null) {
-                        byte fbid = _msg.reader().readByte();
-                        int fbidz = fbid & 0xFF; //Chuyển sang byte không dấu
-                        FlagBagService.gI().sendIconEffectFlag(player, fbidz);
-                    }
-                    break;
-                case -32:
-                    int bgId = _msg.reader().readShort();
-                    SessionService.sendItemBGTemplate(_session, bgId);
-                    break;
-                case 22:
-                    if (player != null) {
-                        _msg.reader().readByte();
-                        NpcManager.getNpc(ConstNpc.DAU_THAN).confirmMenu(player, _msg.reader().readByte());
-                    }
-                    break;
-                case -33:
-                case -23:
-                    if (player != null) {
-                        ChangeMapService.gI().changeMapWaypoint(player);
-                        Service.gI().hideWaitDialog(player);
-                    }
-                    break;
-                case -45:
-                    if (player != null) {
-                        if (TransactionService.gI().check(player)) {
-                            Service.gI().sendThongBao(player, "Không thể thực hiện");
-                            return;
-                        }
-                        byte status = _msg.reader().readByte();
-                        SkillService.gI().useSkill(player, null, null, status, _msg);
-                    }
-                    break;
-                case -46:
-                    if (player != null) {
-                        ClanService.gI().getClan(player, _msg);
-                    }
-                    break;
-                case -51:
-                    if (player != null) {
-                        ClanService.gI().clanMessage(player, _msg);
-                    }
-                    break;
-                case -54:
-                    if (player != null) {
-                        ClanService.gI().clanDonate(player, _msg);
-                    }
-                    break;
-                case -49:
-                    if (player != null) {
-                        ClanService.gI().joinClan(player, _msg);
-                    }
-                    break;
-                case -50:
-                    if (player != null) {
-                        ClanService.gI().sendListMemberClan(player, _msg.reader().readInt());
-                    }
-                    break;
-                case -56:
-                    if (player != null) {
-                        ClanService.gI().clanRemote(player, _msg);
-                    }
-                    break;
-                case -47:
-                    if (player != null) {
-                        ClanService.gI().sendListClan(player, _msg.reader().readUTF());
-                    }
-                    break;
-                case -55:
-                    if (player != null) {
-                        ClanService.gI().showMenuLeaveClan(player);
-                    }
-                    break;
-                case -57:
-                    if (player != null) {
-                        ClanService.gI().clanInvite(player, _msg);
-                    }
-                    break;
-                case -40:
-                    if (player != null) {
-                        if (TransactionService.gI().check(player)) {
-                            Service.gI().sendThongBao(player, "Không thể thực hiện");
-                            return;
-                        }
-                        UseItem.gI().getItem(_session, _msg);
-                    }
-                    break;
-                case -41:
-                    Service.gI().sendCaption(_session, _msg.reader().readByte());
-                    break;
-                case -43:
-                    if (player != null) {
-                        if (TransactionService.gI().check(player)) {
-                            Service.gI().sendThongBao(player, "Không thể thực hiện");
-                            return;
-                        }
-                        if (player.baovetaikhoan) {
-                            Service.gI().sendThongBao(player, "Chức năng bảo vệ đã được bật. Bạn vui lòng kiểm tra lại");
-                            return;
-                        }
-                        UseItem.gI().doItem(player, _msg);
-                    }
-                    break;
-                case -91:
-                    if (player != null) {
-                        switch (player.idMark.getTypeChangeMap()) {
-                            case ConstMap.CHANGE_CAPSULE -> {
-                                UseItem.gI().choseMapCapsule(player, _msg.reader().readByte());
-                            }
-                            case ConstMap.CHANGE_BLACK_BALL -> {
-                                BlackBallWarService.gI().changeMap(player, _msg.reader().readByte());
-                            }
-                        }
-                    }
-                    break;
-                case -39:
-                    if (player != null) {
-                        ChangeMapService.gI().finishLoadMap(player);
-                    }
-                    break;
-                case 11:
-                    byte modId = _msg.reader().readByte();
-                    SessionService.requestMobTemplate(_session, modId);
-                    break;
-                case 44://player chat
-                    if (player != null) {
-                        PlayerService.gI().chat(player, _msg.reader().readUTF());
-                    }
-                    break;
-                case 32:
-                    if (player != null) {
-                        int npcId = _msg.reader().readShort();
-                        int select = _msg.reader().readByte();
-                        MenuController.gI().doSelectMenu(player, npcId, select);
-                    }
-                    break;
-                case 33:
-                    if (player != null) {
-                        int npcId = _msg.reader().readShort();
-                        MenuController.gI().openMenuNPC(_session, npcId, player);
-                    }
-                    break;
-                case 34:
-                    if (player != null) {
-                        int selectSkill = _msg.reader().readShort();
-                        SkillService.gI().selectSkill(player, selectSkill);
-                    }
-                    break;
-                case 54:
-                    if (player != null) {
-                        int mobId = _msg.reader().readByte();
-                        int masterId = -1;
-                        boolean isMobMe = mobId == -1;
-                        if (isMobMe) {
-                            masterId = _msg.reader().readInt();
-                        }
-                        Service.gI().attackMob(player, mobId, isMobMe, masterId);
-                    }
-                    break;
-                case -60:
-                    if (player != null) {
-                        int playerId = _msg.reader().readInt();
-                        Service.gI().attackPlayer(player, playerId);
-                    }
-                    break;
-                case -27:
-                    _session.sendKey();
-                    SessionService.sendVersionRes(_session);
-                    break;
-                case -111:
-                    SessionService.sendDataImageVersion(_session);
-                    break;
-                case -20:
-                    if (player != null && !player.isDie()) {
-                        int itemMapId = _msg.reader().readShort();
-                        ItemMapService.gI().pickItem(player, itemMapId, false);
-                    }
-                    break;
-                case -28:
-                    messageNotMap(_session, _msg);
-                    break;
-                case -29:
-                    messageNotLogin(_session, _msg);
-                    break;
-                case -30:
-                    messageSubCommand(_session, _msg);
-                    break;
-                case -15: // về nhà
-                    if (player != null) {
-                        int mapId = MapService.gI().isMapMaBu(player.zone.map.mapId) ? 114 : player.gender + 21;
-                        ChangeMapService.gI().changeMapBySpaceShip(player, mapId, 0, -1);
-                    }
-                    break;
-                case -16: // hồi sinh
-                    if (player != null && !player.isPKDHVT) {
-                        PlayerService.gI().hoiSinh(player);
-                    }
-                    break;
-                case -104:
-                    if (player != null) {
-                        Service.gI().mabaove(player, _msg.reader().readInt());
-                    }
-                    break;
-                case -118:
-                    if (player != null) {
-                        int _id = _msg.reader().readInt();
-                        int menuType = player.idMark.getMenuType();
-                        switch (menuType) {
-                            case 0, 1, 2 -> {
-                                SuperRankService.gI().competing(player, _id);
-                            }
-                            default -> {
-                                if (player.isAdmin()) {
-                                    Boss boss = BossManager.gI().getBoss(_id);
-                                    if (boss != null) {
-                                        ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
-                                    }
-                                } else {
-                                    Service.gI().sendThongBao(player, "Không thể thực hiện");
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case -38: //finish update
-                    if (player != null) {
-                        finishUpdate(player);
-                    }
-                    break;
-                case 126: //androidPack2
-                    break;
-                case -78: //checkMMove
-                    _msg.reader().readInt(); // second
-                    break;
-                case -114: //RequestPean
-                    break;
-                case 27:
-                    break;
-                case -76:
-                    AchievementService.gI().confirmAchievement(player, _msg.reader().readByte());
-                    break;
-                default:
-                    break;
+        try {
+            byte cmd = _msg.command;
+            if (handleSessionCommands(_session, _msg, cmd)) {
+                return;
             }
+
+            if (player == null) return;
+            handlePlayerCommands(player, _session, _msg, cmd);
+
         } catch (Exception e) {
-            if (errors < 5) {
+            if (errors < MAX_ERRORS_LOG) {
                 errors++;
-                NLogger.logError(e);
-                if (player != null) {
-                }
-                NLogger.logWarning("Lỗi function: 'onMessage'");
-                NLogger.logWarning("Lỗi controller message command: " + _msg.command);
+                MyLogger.logError(e);
+                MyLogger.logWarning("Lỗi function: 'onMessage'");
+                MyLogger.logWarning("Lỗi controller message command: " + _msg.command);
             }
         } finally {
             _msg.cleanup();
             _msg.dispose();
-            long timeDo = System.currentTimeMillis() - st;
-            if (timeDo > 10000) {
+        }
+    }
+
+    private boolean handleSessionCommands(MySession session, Message msg, byte cmd) throws Exception {
+        switch (cmd) {
+            case CMD_NOT_LOGIN -> messageNotLogin(session, msg);
+            case CMD_NOT_MAP -> messageNotMap(session, msg);
+            case CMD_SUB_COMMAND -> messageSubCommand(session, msg);
+            case CMD_DOWNLOAD_DATA -> handleDownloadData(session, msg);
+            case CMD_UPDATE_DATA -> SessionService.updateData(session);
+            case CMD_ICON -> SessionService.sendIcon(session, msg.reader().readInt());
+            case CMD_IMAGE_BY_NAME -> SessionService.sendImageByName(session, msg.reader().readUTF());
+            case CMD_ITEM_BG_TEMPLATE -> SessionService.sendItemBGTemplate(session, msg.reader().readShort());
+            case CMD_VERSION_RES -> {
+                session.sendKey();
+                SessionService.sendVersionRes(session);
             }
+            case CMD_IMAGE_VERSION -> SessionService.sendDataImageVersion(session);
+            case CMD_CAPTION -> Service.gI().sendCaption(session, msg.reader().readByte());
+            case CMD_NEW_GAME -> newGame(session, msg);
+            case CMD_MOB_TEMPLATE -> SessionService.requestMobTemplate(session, msg.reader().readByte());
+            default -> {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void handlePlayerCommands(Player player, MySession session, Message msg, byte cmd) throws IOException {
+        switch (cmd) {
+            case CMD_CONSIGN_SHOP -> handleConsignShop(player, msg);
+            case CMD_RADAR -> handleRadar(player, msg);
+            case CMD_SPECIAL_MAP_CHANGE -> handleSpecialMapChange(player);
+            case CMD_LUCKY_ROUND_1, CMD_LUCKY_ROUND_2 -> LuckyRound.gI().readOpenBall(player, msg);
+            case CMD_INPUT -> Input.gI().doInput(player, msg);
+            case CMD_INTRINSIC -> IntrinsicService.gI().showMenu(player);
+            case CMD_MAGIC_TREE -> handleMagicTree(player, msg);
+            case CMD_ENEMY -> FriendAndEnemyService.gI().controllerEnemy(player, msg);
+            case CMD_YARDRAT_MOVE -> {
+                player.changeMapVIP = true;
+                FriendAndEnemyService.gI().goToPlayerWithYardrat(player, msg);
+            }
+            case CMD_PRIVATE_CHAT -> FriendAndEnemyService.gI().chatPrivate(player, msg);
+            case CMD_FRIEND -> FriendAndEnemyService.gI().controllerFriend(player, msg);
+            case CMD_PVP -> {
+                if (!isAccountProtected(player)) PVPService.gI().controllerThachDau(player, msg);
+            }
+            case CMD_TRANSACTION -> TransactionService.gI().controller(player, msg);
+            case CMD_PET_INFO -> Service.gI().showInfoPet(player);
+            case CMD_PET_STATUS -> {
+                if (player.pet != null) player.pet.changeStatus(msg.reader().readByte());
+            }
+            case CMD_BUY_ITEM -> {
+                if (!Maintenance.isRunning && isSecureAndActionable(player)) {
+                    ShopService.gI().takeItem(player, msg.reader().readByte(), msg.reader().readShort());
+                }
+            }
+            case CMD_SELL_ITEM -> {
+                if (!Maintenance.isRunning && isSecureAndActionable(player)) handleSellItem(player, msg);
+            }
+            case CMD_ZONE_UI -> ChangeMapService.gI().openZoneUI(player);
+            case CMD_CHANGE_ZONE -> ChangeMapService.gI().changeZone(player, msg.reader().readByte());
+            case CMD_GLOBAL_CHAT -> {
+                if (!isTransactionBlocked(player)) ChatGlobalService.gI().chat(player, msg.reader().readUTF());
+            }
+            case CMD_PLAYER_MENU -> Service.gI().getPlayerMenu(player, msg.reader().readInt());
+            case CMD_SKILL_SHORTCUT -> handleSkillShortcut(player, msg);
+            case CMD_FLAG_UI -> handleFlagUI(player, msg);
+            case CMD_MOVE -> handleMove(player, msg);
+            case CMD_COMBINE -> handleCombine(player, msg);
+            case CMD_EFFECT_TEMPLATE -> handleEffectTemplate(player, session, msg);
+            case CMD_FLAG_CHOOSE -> FlagBagService.gI().sendIconFlagChoose(player, msg.reader().readByte());
+            case CMD_FLAG_EFFECT -> FlagBagService.gI().sendIconEffectFlag(player, msg.reader().readByte() & 0xFF);
+            case CMD_NPC_DAU_THAN -> {
+                msg.reader().readByte();
+                NpcManager.getNpc(ConstNpc.DAU_THAN).confirmMenu(player, msg.reader().readByte());
+            }
+            case CMD_CHANGE_MAP_WAYPOINT, CMD_CHANGE_MAP_WAYPOINT_2 -> {
+                ChangeMapService.gI().changeMapWaypoint(player);
+                Service.gI().hideWaitDialog(player);
+            }
+            case CMD_USE_SKILL -> {
+                if (!isTransactionBlocked(player)) {
+                    SkillService.gI().useSkill(player, null, null, msg.reader().readByte(), msg);
+                }
+            }
+            case CMD_USE_ITEM -> {
+                if (!isTransactionBlocked(player)) UseItem.gI().getItem(session, msg);
+            }
+            case CMD_DO_ITEM -> {
+                if (isSecureAndActionable(player)) UseItem.gI().doItem(player, msg);
+            }
+            case CMD_CHANGE_MAP_SPECIAL -> handleChangeMapSpecial(player, msg);
+            case CMD_FINISH_LOAD_MAP -> ChangeMapService.gI().finishLoadMap(player);
+            case CMD_CHAT -> PlayerService.gI().chat(player, msg.reader().readUTF());
+            case CMD_SELECT_MENU -> MenuController.gI().doSelectMenu(player, msg.reader().readShort(), msg.reader().readByte());
+            case CMD_OPEN_MENU_NPC -> MenuController.gI().openMenuNPC(session, msg.reader().readShort(), player);
+            case CMD_SELECT_SKILL -> SkillService.gI().selectSkill(player, msg.reader().readShort());
+            case CMD_ATTACK_MOB -> handleAttackMob(player, msg);
+            case CMD_ATTACK_PLAYER -> Service.gI().attackPlayer(player, msg.reader().readInt());
+            case CMD_PICK_ITEM -> {
+                if (!player.isDie()) ItemMapService.gI().pickItem(player, msg.reader().readShort(), false);
+            }
+            case CMD_GO_HOME -> handleGoHome(player);
+            case CMD_REVIVE -> {
+                if (!player.isPKDHVT) PlayerService.gI().hoiSinh(player);
+            }
+            case CMD_PROTECT_ACCOUNT -> Service.gI().mabaove(player, msg.reader().readInt());
+            case CMD_SUPER_RANK -> handleSuperRank(player, msg);
+            case CMD_FINISH_UPDATE -> finishUpdate(player);
+            case CMD_CONFIRM_ACHIEVEMENT -> AchievementService.gI().confirmAchievement(player, msg.reader().readByte());
+            case CMD_CLAN_INFO, CMD_CLAN_MESSAGE, CMD_CLAN_DONATE, CMD_CLAN_JOIN, CMD_CLAN_MEMBER_LIST, 
+                 CMD_CLAN_REMOTE, CMD_CLAN_LIST, CMD_CLAN_LEAVE, CMD_CLAN_INVITE -> handleClanCommands(player, msg, cmd);
+            case CMD_CHECK_MOVE -> msg.reader().readInt();
+        }
+    }
+
+    private boolean isTransactionBlocked(Player player) {
+        if (TransactionService.gI().check(player)) {
+            Service.gI().sendThongBao(player, "Không thể thực hiện");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isAccountProtected(Player player) {
+        if (player.baovetaikhoan) {
+            Service.gI().sendThongBao(player, "Chức năng bảo vệ đã được bật. Bạn vui lòng kiểm tra lại");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isSecureAndActionable(Player player) {
+        return !isTransactionBlocked(player) && !isAccountProtected(player);
+    }
+
+    private void handleDownloadData(MySession session, Message msg) throws IOException {
+        byte type = msg.reader().readByte();
+        if (type == 1) {
+            SessionService.sendSizeRes(session);
+        } else if (type == 2) {
+            SessionService.sendRes(session);
+        }
+    }
+
+    private void handleConsignShop(Player player, Message msg) throws IOException {
+        if (!isSecureAndActionable(player)) return;
+
+        byte action = msg.reader().readByte();
+        switch (action) {
+            case 0 -> {
+                short idItem = msg.reader().readShort();
+                byte moneyType = msg.reader().readByte();
+                int money = msg.reader().readInt();
+                int quantity = (player.getSession().version >= 222) ? msg.reader().readInt() : msg.reader().readByte();
+                if (quantity > 0) ConsignShopService.gI().KiGui(player, idItem, money, moneyType, quantity);
+            }
+            case 1, 2 -> ConsignShopService.gI().claimOrDel(player, action, msg.reader().readShort());
+            case 3 -> {
+                short idItem = msg.reader().readShort();
+                msg.reader().readByte();
+                msg.reader().readInt();
+                ConsignShopService.gI().buyItem(player, idItem);
+            }
+            case 4 -> ConsignShopService.gI().openShopKyGui(player, msg.reader().readByte(), msg.reader().readByte());
+            case 5 -> ConsignShopService.gI().upItemToTop(player, msg.reader().readShort());
+            default -> Service.gI().sendThongBao(player, "Không thể thực hiện");
+        }
+    }
+
+    private void handleRadar(Player player, Message msg) throws IOException {
+        byte actionRadar = msg.reader().readByte();
+        switch (actionRadar) {
+            case 0 -> RadarService.gI().sendRadar(player, player.Cards);
+            case 1 -> {
+                short idC = msg.reader().readShort();
+                Card card = player.Cards.stream().filter(r -> r != null && r.Id == idC).findFirst().orElse(null);
+                if (card != null && card.Level != 0) {
+                    if (card.Used == 0) {
+                        if (player.Cards.stream().anyMatch(c -> c != null && c.Used == 1)) {
+                            Service.gI().sendThongBao(player, "Số thẻ sử dụng đã đạt tối đa");
+                            return;
+                        }
+                        card.Used = 1;
+                    } else {
+                        card.Used = 0;
+                    }
+                    RadarService.gI().Radar1(player, idC, card.Used);
+                    Service.gI().point(player);
+                }
+            }
+        }
+    }
+
+    private void handleSpecialMapChange(Player player) {
+        if (player.type == 0 && player.maxTime == 30) {
+            ChangeMapService.gI().changeMapBySpaceShip(player, ConstMap.NHA_BUNMA, -1, Util.nextInt(60, 200));
+            player.idMark.setGotoFuture(false);
+            return;
+        }
+        
+        if (player.type == 1 && player.maxTime == 5 && player.idMark != null && player.idMark.isGoToBDKB()) {
+            ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, ConstMap.DONG_HAI_TAC, -1), 35, 35);
+            player.idMark.setGoToBDKB(false);
+            return;
+        }
+        
+        if (player.type == 2 && player.maxTime == 5) {
+            int targetMap = MapService.gI().isMapHanhTinhThucVat(player.zone.map.mapId) ? ConstMap.NUI_KHI_VANG : ConstMap.KHU_HANG_DONG;
+            ChangeMapService.gI().changeMap(player, targetMap, -1, -1, 5);
+            return;
+        }
+        
+        if (player.type == 3 && player.maxTime == 5) {
+            ChangeMapService.gI().changeMap(player, player.idMark.getZoneKhiGasHuyDiet(), player.idMark.getXMapKhiGasHuyDiet(), player.idMark.getYMapKhiGasHuyDiet());
+            player.idMark.setZoneKhiGasHuyDiet(null);
+            return;
+        }
+        
+        if (player.type == 4 && player.maxTime == 5 && player.idMark != null && player.idMark.isGoToKGHD()) {
+            ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, ConstMap.THANH_PHO_SANTA_149, -1), 100 + (Util.nextInt(-10, 10)), 336);
+            player.idMark.setGoToKGHD(false);
+            return;
+        }
+        
+        if (player.type == 5 && player.maxTime == 5) {
+            ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, ConstMap.TAY_THANH_DIA, -1), 100 + (Util.nextInt(-10, 10)), 336);
+        }
+    }
+
+    private void handleMagicTree(Player player, Message msg) throws IOException {
+        switch (msg.reader().readByte()) {
+            case 1 -> player.magicTree.openMenuTree();
+            case 2 -> player.magicTree.loadMagicTree();
+        }
+    }
+
+    private void handleSellItem(Player player, Message msg) throws IOException {
+        byte action = msg.reader().readByte();
+        byte type = msg.reader().readByte();
+        short id = msg.reader().readShort();
+        if (action == 0) {
+            ShopService.gI().showConfirmSellItem(player, type, id);
+        } else {
+            ShopService.gI().sellItem(player, type, id);
+        }
+    }
+
+    private void handleSkillShortcut(Player player, Message msg) {
+        for (int i = 0; i < 10; i++) {
+            try {
+                player.playerSkill.skillShortCut[i] = msg.reader().readByte();
+            } catch (IOException e) {
+                player.playerSkill.skillShortCut[i] = -1;
+            }
+        }
+        player.playerSkill.sendSkillShortCut();
+    }
+
+    private void handleFlagUI(Player player, Message msg) throws IOException {
+        switch (msg.reader().readByte()) {
+            case 0 -> Service.gI().openFlagUI(player);
+            case 1 -> Service.gI().chooseFlag(player, msg.reader().readByte());
+        }
+    }
+
+    private void handleMove(Player player, Message msg) {
+        if (player.isDie()) {
+            Service.gI().charDie(player);
+            return;
+        }
+        if (player.effectSkill.isHaveEffectSkill()) return;
+
+        int toX = player.location.x;
+        int toY = player.location.y;
+        try {
+            byte b = msg.reader().readByte();
+            toX = msg.reader().readShort();
+            toY = msg.reader().readShort();
+            
+            if (player.zone != null && MapService.gI().isMapBlackBallWar(player.zone.map.mapId) 
+                    && Util.getDistance(player.location.x, player.location.y, toX, toY) > 500) {
+                return;
+            }
+            if (b == 1) {
+                AchievementService.gI().checkDoneTaskFly(player, player.location.x - toX);
+            }
+        } catch (IOException ignored) {}
+        
+        PlayerService.gI().playerMove(player, toX, toY);
+    }
+
+    private void handleCombine(Player player, Message msg) throws IOException {
+        msg.reader().readByte();
+        int[] indexItem = new int[msg.reader().readByte()];
+        for (int i = 0; i < indexItem.length; i++) {
+            indexItem[i] = msg.reader().readByte();
+        }
+        CombineService.gI().showInfoCombine(player, indexItem);
+    }
+
+    private void handleEffectTemplate(Player player, MySession session, Message msg) throws IOException {
+        int effId = msg.reader().readShort();
+        
+        if (player.zone == null) return; 
+
+        int idT = effId;
+        int shenronType = player.zone.shenronType;
+
+        if (idT == 25 && shenronType != -1 
+                && player.zone.map.mapId != ConstMap.LANG_ARU 
+                && player.zone.map.mapId != ConstMap.LANG_MORI 
+                && player.zone.map.mapId != ConstMap.LANG_KAKAROT) {
+            
+            idT = (shenronType == 0 || shenronType == 1) ? 59 : 60; 
+        }
+        
+        SessionService.sendEffectTemplate(session, effId, idT);
+    }
+
+
+    private void handleChangeMapSpecial(Player player, Message msg) throws IOException {
+        switch (player.idMark.getTypeChangeMap()) {
+            case ConstMap.CHANGE_CAPSULE -> UseItem.gI().choseMapCapsule(player, msg.reader().readByte());
+            case ConstMap.CHANGE_BLACK_BALL -> BlackBallWarService.gI().changeMap(player, msg.reader().readByte());
+        }
+    }
+
+    private void handleAttackMob(Player player, Message msg) throws IOException {
+        int mobId = msg.reader().readByte();
+        int masterId = -1;
+        boolean isMobMe = mobId == -1;
+        if (isMobMe) masterId = msg.reader().readInt();
+        Service.gI().attackMob(player, mobId, isMobMe, masterId);
+    }
+
+    private void handleGoHome(Player player) {
+        int mapId = MapService.gI().isMapMaBu(player.zone.map.mapId) ? ConstMap.CONG_PHI_THUYEN : player.gender + ConstMap.NHA_GOHAN;
+        ChangeMapService.gI().changeMapBySpaceShip(player, mapId, 0, -1);
+    }
+
+    private void handleSuperRank(Player player, Message msg) throws IOException {
+        int id = msg.reader().readInt();
+        switch (player.idMark.getMenuType()) {
+            case 0, 1, 2 -> SuperRankService.gI().competing(player, id);
+            default -> {
+                if (player.isAdmin()) {
+                    Boss boss = BossManager.gI().getBoss(id);
+                    if (boss != null) ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
+                } else {
+                    Service.gI().sendThongBao(player, "Không thể thực hiện");
+                }
+            }
+        }
+    }
+
+    private void handleClanCommands(Player player, Message msg, byte cmd) throws IOException {
+        switch (cmd) {
+            case CMD_CLAN_INFO -> ClanService.gI().getClan(player, msg);
+            case CMD_CLAN_MESSAGE -> ClanService.gI().clanMessage(player, msg);
+            case CMD_CLAN_DONATE -> ClanService.gI().clanDonate(player, msg);
+            case CMD_CLAN_JOIN -> ClanService.gI().joinClan(player, msg);
+            case CMD_CLAN_MEMBER_LIST -> ClanService.gI().sendListMemberClan(player, msg.reader().readInt());
+            case CMD_CLAN_REMOTE -> ClanService.gI().clanRemote(player, msg);
+            case CMD_CLAN_LIST -> ClanService.gI().sendListClan(player, msg.reader().readUTF());
+            case CMD_CLAN_LEAVE -> ClanService.gI().showMenuLeaveClan(player);
+            case CMD_CLAN_INVITE -> ClanService.gI().clanInvite(player, msg);
         }
     }
 
     public void messageNotLogin(MySession session, Message msg) {
-        if (msg != null) {
-            try {
-                byte cmd = msg.reader().readByte();
-                switch (cmd) {
-                    case 0:
-                        session.login(msg.reader().readUTF(), msg.reader().readUTF());
-                        break;
-                    case 2:
-                        Service.gI().setClientType(session, msg);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (IOException e) {
-                session.disconnect();
+        if (msg == null) return;
+        try {
+            switch (msg.reader().readByte()) {
+                case ACTION_LOGIN -> session.login(msg.reader().readUTF(), msg.reader().readUTF());
+                case ACTION_CLIENT_INFO -> Service.gI().setClientType(session, msg);
             }
+        } catch (IOException e) {
+            session.disconnect();
         }
     }
 
-    public void messageNotMap(MySession _session, Message _msg) {
-        if (_msg != null) {
-            Player player = null;
-            try {
-                player = _session.player;
-                byte cmd = _msg.reader().readByte();
-                switch (cmd) {
-                    case 2:
-                        createChar(_session, _msg);
-                        break;
-                    case 6:
-                        SessionService.updateMap(_session);
-                        break;
-                    case 7:
-                        SessionService.updateSkill(_session);
-                        break;
-                    case 8:
-                        ItemData.updateItem(_session);
-                        break;
-                    case 10:
-                        SessionService.sendMapTemp(_session, _msg.reader().readUnsignedByte());
-                        break;
-                    case 13:
-                        if (player != null && player.isPl()) {
-                            Service.gI().player(player);
-                            Service.gI().Send_Caitrang(player);
-
-                            Service.gI().sendFlagBag(player);
-
-                            player.playerSkill.sendSkillShortCut();
-                            ItemTimeService.gI().sendAllItemTime(player);
-
-                            TaskService.gI().sendInfoCurrentTask(player);
-
-                            Service.gI().sendThongBaoFromAdmin(player, "thong bao abcd\n");
-
-                            if (TaskService.gI().getIdTask(player) == ConstTask.TASK_0_0) {
-                                TaskService.gI().sendFirstTask(player);
-                            }
-
-                            if (player.inventory.itemsBody.get(10).isNotNullItem()) {
-                                Service.gI().sendChibi(player);
-                            }
-                            player.zone.mapInfo(player);
-                            if (player.getSession().version >= 231) {
-                                for (Skill skill : player.playerSkill.skills) {
-                                    if (skill.currLevel <= 0 || skill.template.type != 4) {
-                                        continue;
-                                    }
-                                    SkillService.gI().sendCurrLevelSpecial(player, skill);
-                                }
-                            }
-                            Service.gI().sendTimeSkill(player);
-                            player.sendNewPet();
-                            TrainingService.gI().tnsmLuyenTapUp(player);
-                            if (player.getSession() != null && player.getSession().tongnap > 0) {
-                                AchievementService.gI().checkDoneTask(player, ConstAchievement.LAN_DAU_NAP_NGOC);
-                            }
-                        }
-                        break;
-                    default:
-                        break;
+    public void messageNotMap(MySession session, Message msg) {
+        if (msg == null) return;
+        Player player = session.player;
+        try {
+            switch (msg.reader().readByte()) {
+                case ACTION_CREATE_CHAR -> createChar(session, msg);
+                case ACTION_UPDATE_MAP -> SessionService.updateMap(session);
+                case ACTION_UPDATE_SKILL -> SessionService.updateSkill(session);
+                case ACTION_UPDATE_ITEM -> ItemData.updateItem(session);
+                case ACTION_MAP_TEMP -> SessionService.sendMapTemp(session, msg.reader().readUnsignedByte());
+                case ACTION_INIT_INFO -> {
+                    if (player != null && player.isPl()) initPlayerInfo(player);
                 }
-            } catch (IOException e) {
-                NLogger.logError(e);
             }
+        } catch (IOException e) {
+            MyLogger.logError(e);
         }
     }
 
-    public void messageSubCommand(MySession _session, Message _msg) {
-        if (_msg != null) {
-            Player player = null;
-            try {
-                player = _session.player;
-                byte command = _msg.reader().readByte();
-                switch (command) {
-                    case 16:
-                        byte type = _msg.reader().readByte();
-                        short point = _msg.reader().readShort();
-                        if (player != null && player.nPoint != null) {
-                            player.nPoint.increasePoint(type, point);
-                        }
-                        break;
-                    case 64:
-                        int playerId = _msg.reader().readInt();
-                        int menuId = _msg.reader().readShort();
-                        SubMenuService.gI().controller(player, playerId, menuId);
-                        break;
-                    default:
-                        break;
+    private void initPlayerInfo(Player player) {
+        Service.gI().player(player);
+        Service.gI().Send_Caitrang(player);
+        Service.gI().sendFlagBag(player);
+        player.playerSkill.sendSkillShortCut();
+        ItemTimeService.gI().sendAllItemTime(player);
+        TaskService.gI().sendInfoCurrentTask(player);
+        Service.gI().sendThongBaoFromAdmin(player, "thong bao abcd\n");
+
+        if (TaskService.gI().getIdTask(player) == ConstTask.TASK_0_0) {
+            TaskService.gI().sendFirstTask(player);
+        }
+
+        if (player.inventory.itemsBody.get(10).isNotNullItem()) {
+            Service.gI().sendChibi(player);
+        }
+        player.zone.mapInfo(player);
+        
+        if (player.getSession().version >= 231) {
+            for (Skill skill : player.playerSkill.skills) {
+                if (skill.currLevel > 0 && skill.template.type == 4) {
+                    SkillService.gI().sendCurrLevelSpecial(player, skill);
                 }
-            } catch (IOException e) {
-                NLogger.logError(e);
             }
+        }
+        
+        Service.gI().sendTimeSkill(player);
+        player.sendNewPet();
+        TrainingService.gI().tnsmLuyenTapUp(player);
+        
+        if (player.getSession() != null && player.getSession().tongnap > 0) {
+            AchievementService.gI().checkDoneTask(player, ConstAchievement.LAN_DAU_NAP_NGOC);
         }
     }
 
+    public void messageSubCommand(MySession session, Message msg) {
+        if (msg == null) return;
+        Player player = session.player;
+        try {
+            switch (msg.reader().readByte()) {
+                case SUB_CMD_INCREASE_POINT -> {
+                    byte type = msg.reader().readByte();
+                    short point = msg.reader().readShort();
+                    if (player != null && player.nPoint != null) {
+                        player.nPoint.increasePoint(type, point);
+                    }
+                }
+                case SUB_CMD_SUB_MENU -> SubMenuService.gI().controller(player, msg.reader().readInt(), msg.reader().readShort());
+            }
+        } catch (IOException e) {
+            MyLogger.logError(e);
+        }
+    }
 
     public void createChar(MySession session, Message msg) {
-        if (!Maintenance.isRunning) {
-            boolean created = false;
-            try {
-                String name = msg.reader().readUTF();
-                int gender = msg.reader().readByte();
-                int hair = msg.reader().readByte();
-                if (name.length() >= 5 && name.length() <= 10) {
-                    if(PlayerDAO.usernameExists(name)){
-                        Service.gI().sendThongBaoOK(session, "Tên nhân vật đã tồn tại");
-                    }
-                     else {
-                        if (Util.haveSpecialCharacter(name)) {
-                            Service.gI().sendThongBaoOK(session, "Tên nhân vật không được chứa ký tự đặc biệt");
-                        } else {
-                            boolean isNotIgnoreName = true;
-                            for (String n : ConstIgnoreName.IGNORE_NAME) {
-                                if (name.equals(n)) {
-                                    Service.gI().sendThongBaoOK(session, "Tên nhân vật đã tồn tại");
-                                    isNotIgnoreName = false;
-                                    break;
-                                }
-                            }
-                            if (isNotIgnoreName) {
-                                created = PlayerDAO.createNewPlayer(session.userId, name.toLowerCase(), (byte) gender, hair);
-                            }
-                        }
-                    }
-                } else {
-                    Service.gI().sendThongBaoOK(session, "Tên nhân vật chỉ đồng ý các ký tự a-z, 0-9 và chiều dài từ 5 đến 10 ký tự");
+        if (Maintenance.isRunning) return;
+        
+        boolean created = false;
+        try {
+            String name = msg.reader().readUTF();
+            int gender = msg.reader().readByte();
+            int hair = msg.reader().readByte();
+            
+            if (name.length() < MIN_CHAR_NAME_LENGTH || name.length() > MAX_CHAR_NAME_LENGTH) {
+                Service.gI().sendThongBaoOK(session, "Tên nhân vật chỉ đồng ý các ký tự a-z, 0-9 và chiều dài từ " + MIN_CHAR_NAME_LENGTH + " đến " + MAX_CHAR_NAME_LENGTH + " ký tự");
+                return;
+            }
+
+            if (PlayerDAO.usernameExists(name)) {
+                Service.gI().sendThongBaoOK(session, "Tên nhân vật đã tồn tại");
+                return;
+            }
+
+            if (Util.haveSpecialCharacter(name)) {
+                Service.gI().sendThongBaoOK(session, "Tên nhân vật không được chứa ký tự đặc biệt");
+                return;
+            }
+
+            for (String ignoredName : ConstIgnoreName.IGNORE_NAME) {
+                if (name.equals(ignoredName)) {
+                    Service.gI().sendThongBaoOK(session, "Tên nhân vật đã tồn tại");
+                    return;
                 }
-            } catch (Exception e) {
-                NLogger.logError(e);
             }
-            if (created) {
-                session.login(session.uu, session.pp);
-            }
+
+            created = PlayerDAO.createNewPlayer(session.userId, name.toLowerCase(), (byte) gender, hair);
+            
+        } catch (Exception e) {
+            MyLogger.logError(e);
+        }
+        
+        if (created) {
+            session.login(session.uu, session.pp);
         }
     }
 
@@ -853,11 +686,13 @@ public class Controller implements IMessageHandler {
             Service.gI().sendNangDong(player);
             Service.gI().sendHavePet(player);
             Service.gI().sendTopRank(player);
+            
             if (player.superRank != null && player.superRank.rank < 1) {
                 player.superRank.rank = SuperRankDAO.getRank((int) player.id);
                 player.superRank.lastRewardTime = System.currentTimeMillis();
                 SuperRankDAO.insertData(player);
             }
+            
             ServerNotify.gI().sendNotifyTab(player);
             player.setClothes.setup();
             if (player.pet != null) {
@@ -865,7 +700,7 @@ public class Controller implements IMessageHandler {
             }
             ItemTimeService.gI().sendCanAutoPlay(player);
             player.start();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -873,10 +708,5 @@ public class Controller implements IMessageHandler {
         if (player.getSession() != null) {
             player.getSession().finishUpdate = true;
         }
-    }
-
-    private void sendThongBaoServer(Player player) {
-        Service.gI().sendThongBaoFromAdmin(player, "...\n");
-
     }
 }

@@ -1,7 +1,7 @@
 package services;
 
 import consts.ConstPlayer;
-import logger.NLogger;
+import logger.MyLogger;
 import map.MaBuHold;
 import services.map.MapService;
 import mob.Mob;
@@ -50,7 +50,7 @@ public class EffectSkillService {
             Service.gI().sendMessAnotherNotMeInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -70,7 +70,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(plUseSkill, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -86,7 +86,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(mobTarget.zone, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -168,7 +168,7 @@ public class EffectSkillService {
             msg.cleanup();
             mob.effectSkill.setSocola(System.currentTimeMillis(), timeSocola);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -513,7 +513,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(plUseSkill, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -528,7 +528,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -543,7 +543,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -556,7 +556,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -570,7 +570,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 
@@ -585,7 +585,7 @@ public class EffectSkillService {
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

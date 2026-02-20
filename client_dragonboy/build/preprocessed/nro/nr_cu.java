@@ -84,9 +84,9 @@ public final class nr_cu extends mScreen implements IActionListener {
 
    public nr_cu() {
       try {
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             byte[] var1 = new byte[]{39, 40, 41};
-            if (!main.GameCanvas.a) {
+            if (!main.GameCanvas.isLowGraphic) {
                try {
                   for(int var3 = 0; var3 < var1.length; ++var3) {
                      InputStream var2 = FireWorkMn.a("/mymap/mapTable" + var1[var3]);
@@ -181,7 +181,7 @@ public final class nr_cu extends mScreen implements IActionListener {
       super.center = new CommandLine(mResources.by, this, 8000, (Object)null);
       super.left = new CommandLine(mResources.bz, this, 8001, (Object)null);
       if (!main.GameCanvas.isTouch) {
-         super.cb = c.j;
+         super.right = c.j;
       }
 
    }
@@ -220,7 +220,7 @@ public final class nr_cu extends mScreen implements IActionListener {
 
       if (f == 0) {
          if (!main.GameCanvas.isTouch) {
-            super.cb = c.j;
+            super.right = c.j;
          }
 
          c.update();
@@ -243,7 +243,7 @@ public final class nr_cu extends mScreen implements IActionListener {
             this.e();
          }
 
-         super.cb = null;
+         super.right = null;
       }
 
       if (f == 2) {
@@ -255,7 +255,7 @@ public final class nr_cu extends mScreen implements IActionListener {
             e = 0;
          }
 
-         super.cb = null;
+         super.right = null;
       }
 
       if (main.GameCanvas.m) {
@@ -315,7 +315,7 @@ public final class nr_cu extends mScreen implements IActionListener {
          main.GameCanvas.paintBackground(var1);
          var1.setColor(-GameScreen.cmx, -GameScreen.cmy);
          int var2;
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             for(var2 = 0; var2 < nr_di.g[d].size(); ++var2) {
                nr_cx var3;
                if ((var3 = (nr_cx)nr_di.g[d].elementAt(var2)).c != -1 && var3.h == 1) {
@@ -346,7 +346,7 @@ public final class nr_cu extends mScreen implements IActionListener {
          SmallImage.b(var1, var11.a[Char.bC[this.o][1][0]].a, this.k + Char.bC[this.o][1][1] + var11.a[Char.bC[this.o][1][0]].b, this.l - Char.bC[this.o][1][2] + var11.a[Char.bC[this.o][1][0]].c + this.m, 0, 0);
          SmallImage.b(var1, var12.a[Char.bC[this.o][2][0]].a, this.k + Char.bC[this.o][2][1] + var12.a[Char.bC[this.o][2][0]].b, this.l - Char.bC[this.o][2][2] + var12.a[Char.bC[this.o][2][0]].c + this.m, 0, 0);
          int var6;
-         if (!main.GameCanvas.a) {
+         if (!main.GameCanvas.isLowGraphic) {
             for(var6 = 0; var6 < nr_di.g[d].size(); ++var6) {
                nr_cx var7;
                if ((var7 = (nr_cx)nr_di.g[d].elementAt(var6)).c != -1 && var7.h == 3) {

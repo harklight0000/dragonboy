@@ -5,7 +5,7 @@ import clan.ClanMember;
 import database.SqlFetcher;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import logger.NLogger;
+import logger.MyLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,7 +53,7 @@ public final class ClanDAO {
 
             return ps.executeUpdate();
         } catch (Exception e) {
-            NLogger.logError(e, "ClanDAO.insert error");
+            MyLogger.logError(e, "ClanDAO.insert error");
             return 0;
         }
     }
@@ -79,7 +79,7 @@ public final class ClanDAO {
 
             return ps.executeUpdate();
         } catch (Exception e) {
-            NLogger.logError(e, "ClanDAO.update error");
+            MyLogger.logError(e, "ClanDAO.update error");
             return 0;
         }
     }
@@ -91,7 +91,7 @@ public final class ClanDAO {
             ps.setInt(1, id);
             return ps.executeUpdate();
         } catch (Exception e) {
-            NLogger.logError(e, "ClanDAO.delete error");
+            MyLogger.logError(e, "ClanDAO.delete error");
             return 0;
         }
     }
@@ -120,7 +120,7 @@ public final class ClanDAO {
                 return c;
             }
         } catch (Exception e) {
-            NLogger.logError(e, "ClanDAO.findById error");
+            MyLogger.logError(e, "ClanDAO.findById error");
             return null;
         }
     }

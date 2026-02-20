@@ -32,7 +32,7 @@ import services.*;
 import services.shenron.Shenron_Service;
 import services.shenron.SummonDragon;
 import player.skill.Skill;
-import logger.NLogger;
+import logger.MyLogger;
 import services.TaskService;
 import utils.SkillUtil;
 import utils.Util;
@@ -40,6 +40,7 @@ import utils.Util;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import player.skill.LearnSkillService;
 
 public class UseItem {
 
@@ -116,7 +117,7 @@ public class UseItem {
             Service.gI().point(player);
             Service.gI().sendSpeedPlayer(player, -1);
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
 
         }
     }
@@ -226,7 +227,7 @@ public class UseItem {
                     break;
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         } finally {
             if (msg != null) {
                 msg.cleanup();
@@ -251,7 +252,8 @@ public class UseItem {
                         UseCard(pl, item);
                         break;
                     case 7: //sách học, nâng skill
-                        learnSkill(pl, item);
+                        LearnSkillService.gI().useItemLearnSkill(pl, item);
+//                        learnSkill(pl, item);
                         break;
                     case 6: //đậu thần
                         this.eatPea(pl);
@@ -1261,6 +1263,7 @@ public class UseItem {
                             curSkill = SkillUtil.createSkill(SkillUtil.getTempSkillSkillByItemID(item.template.id), level);
                             SkillUtil.setSkill(pl, curSkill);
                             InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                            pl.BoughtSkill.add((int) item.template.id);
                             msg = Service.gI().messageSubCommand((byte) 23);
                             msg.writer().writeShort(curSkill.skillId);
                             pl.sendMessage(msg);
@@ -1289,7 +1292,7 @@ public class UseItem {
                 Service.gI().sendThongBao(pl, "Không thể thực hiện");
             }
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

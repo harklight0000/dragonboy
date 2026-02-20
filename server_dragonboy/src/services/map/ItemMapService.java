@@ -4,7 +4,7 @@ import map.ItemMap;
 import network.Message;
 import player.Player;
 import services.Service;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.Util;
 
 public class ItemMapService {
@@ -40,7 +40,7 @@ public class ItemMapService {
             Service.gI().sendMessAllPlayerInMap(itemMap.zone, msg);
             msg.cleanup();
         } catch (Exception e) {
-            NLogger.logError(e);
+            MyLogger.logError(e);
         }
     }
 

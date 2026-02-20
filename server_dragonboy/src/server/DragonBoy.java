@@ -18,7 +18,7 @@ import services.ClanService;
 import npc.NpcFactory;
 import services.shenron.Shenron_Manager;
 import config.Config;
-import logger.NLogger;
+import logger.MyLogger;
 import utils.TimeUtil;
 
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class DragonBoy {
             DragonBoy.gI().init();
             DragonBoy.gI().run();
         } catch (Throwable e) {
-            NLogger.logCritical(e, "Error initializing app context");
+            MyLogger.logError(e, "Error initializing app context");
             System.exit(0);
         }
 
@@ -88,7 +88,7 @@ public class DragonBoy {
         new Thread(TreasureUnderSeaManager.gI(), "Update treasure under sea boss").start();
         new Thread(SnakeWayManager.gI(), "Update snake way boss").start();
         new Thread(GasDestroyManager.gI(), "Update gas destroy boss").start();
-        new Thread(new Shell(), "Shell").start();
+//        new Thread(new Shell(), "Shell").start();
 
     }
 
@@ -110,16 +110,15 @@ public class DragonBoy {
             public void sessionDisconnect(ISession session) {
                 MySession mySession = (MySession) session;
                 if (mySession.player != null) {
-                    NLogger.logInformation(mySession.player.name + " left the game");
+                    MyLogger.logInformation(mySession.player.name + " left the game");
                     Client.gI().kickSession(mySession);
                     return;
                 }
-                // chỉ giảm khi chưa vào game
                 disconnect(mySession);
             }
         }).setTypeSessioClone(MySession.class)
                 .setDoSomeThingWhenClose(() -> {
-                    NLogger.logWarning("SERVER CLOSE");
+                    MyLogger.logWarning("SERVER CLOSE");
                     System.exit(0);
                 })
                 .start(PORT);
@@ -160,22 +159,22 @@ public class DragonBoy {
         try {
             ClanService.gI().close();
         } catch (Exception e) {
-            NLogger.logWarning("Error to save clan!");
+            MyLogger.logWarning("Error to save clan!");
         }
 
         try {
             ConsignShopManager.gI().save();
         } catch (Exception e) {
-            NLogger.logWarning("Error to save consign shop!");
+            MyLogger.logWarning("Error to save consign shop!");
         }
 
         try {
             Client.gI().close();
         } catch (Exception e) {
-            NLogger.logWarning("Error to close clients!");
+            MyLogger.logWarning("Error to close clients!");
         }
 
-        NLogger.logInformation("SUCCESSFULLY MAINTENANCE!");
+        MyLogger.logInformation("SUCCESSFULLY MAINTENANCE!");
         System.exit(0);
     }
 

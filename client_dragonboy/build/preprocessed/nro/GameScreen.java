@@ -558,7 +558,7 @@ public final class GameScreen extends mScreen implements IChatable {
     public final void switchToMe() {
         ServerListScreen.f = false;
         if (BackgroudEffect.b()) {
-            SoundMn.stopAll();
+            SettingMn.stopAll();
         }
 
         LoginScreen.c = false;
@@ -569,7 +569,7 @@ public final class GameScreen extends mScreen implements IChatable {
 
         if (TileMap.b() && nr_cu.b) {
             nr_cu.b = false;
-            super.cb = null;
+            super.right = null;
         }
 
         info1.f = true;
@@ -1028,7 +1028,7 @@ public final class GameScreen extends mScreen implements IChatable {
             this.s.y = e - 32;
         }
 
-        super.cb = this.s;
+        super.right = this.s;
         bm = 1;
         if (main.GameCanvas.isTouch) {
             N = true;
@@ -1390,7 +1390,7 @@ public final class GameScreen extends mScreen implements IChatable {
                                     ChatTextField.gI().prefix = mResources.bp;
                                     if (main.GameCanvas.l && main.GameCanvas.m) {
                                         ChatTextField.gI().a("");
-                                        SoundMn.stopAll();
+                                        SettingMn.stopAll();
                                         Char.myCharz().bP = null;
                                         main.GameCanvas.k();
                                         break label1075;
@@ -1606,13 +1606,13 @@ public final class GameScreen extends mScreen implements IChatable {
                         }
                     }
 
-                    if ((main.GameCanvas.keyPressed[13] || mScreen.a(main.GameCanvas.currentScreen.cb)) && super.cb != null) {
+                    if ((main.GameCanvas.keyPressed[13] || mScreen.a(main.GameCanvas.currentScreen.right)) && super.right != null) {
                         main.GameCanvas.m = false;
                         main.GameCanvas.l = false;
                         main.GameCanvas.keyPressed[13] = false;
                         mScreen.cf = -1;
-                        if (super.cb != null) {
-                            super.cb.performAction();
+                        if (super.right != null) {
+                            super.right.performAction();
                         }
                     }
 
@@ -2104,30 +2104,16 @@ public final class GameScreen extends mScreen implements IChatable {
                         if (main.GameCanvas.ae != 0) {
                             if (this.aK == null) {
                                 if (TextField.isQwerty) {
-                                    if (main.GameCanvas.ae == 113) {
-                                        if (aO[0] != null) {
-                                            this.a(aO[0], true);
+                                    if (main.GameCanvas.ae >= 49 && main.GameCanvas.ae <= 57) {  // Phím 1-9 (ASCII 49-57)
+                                        int skillIndex = main.GameCanvas.ae - 49;  // Tính chỉ số: 1→0, 2→1, ..., 9→8
+                                        if (skillIndex < aO.length && aO[skillIndex] != null) {
+                                            this.a(aO[skillIndex], true);  // Kích hoạt skill
                                         }
-                                    } else if (main.GameCanvas.ae == 119) {
-                                        if (aO[1] != null) {
-                                            this.a(aO[1], true);
-                                        }
-                                    } else if (main.GameCanvas.ae == 101) {
-                                        if (aO[2] != null) {
-                                            this.a(aO[2], true);
-                                        }
-                                    } else if (main.GameCanvas.ae == 114) {
-                                        if (aO[3] != null) {
-                                            this.a(aO[3], true);
-                                        }
-                                    } else if (main.GameCanvas.ae == 116) {
-                                        if (aO[4] != null) {
-                                            this.a(aO[4], true);
-                                        }
+                                        
                                     } else if (main.GameCanvas.ae == 99) {
                                         //nhấn C mở chat
                                         ChatTextField.gI().a("");
-                                    } else if (main.GameCanvas.ae == -6 || main.GameCanvas.ae == 102){
+                                    } else if (main.GameCanvas.ae == -6 || main.GameCanvas.ae == 102) {
                                         //nhấn F đổi mục tiêu
                                         Char.myCharz().J(); // Gọi hàm đổi mục tiêu
                                     }
@@ -2384,7 +2370,7 @@ public final class GameScreen extends mScreen implements IChatable {
                             ServerEffect.a(11, (Char) Char.myCharz(), 5);
                             ServerEffect.a(104, (Char) Char.myCharz(), 4);
                             this.dQ = var1;
-                            SoundMn.stopAll();
+                            SettingMn.stopAll();
                         }
                     }
                 }
@@ -2394,7 +2380,7 @@ public final class GameScreen extends mScreen implements IChatable {
 
     public final void b(int var1, int var2) {
         if (!this.dS) {
-            SoundMn.stopAll();
+            SettingMn.stopAll();
             ResLog.c("ACTIVE SUPER POWER");
             this.dS = true;
             this.dT = 0;
@@ -3465,7 +3451,7 @@ public final class GameScreen extends mScreen implements IChatable {
             }
         }
 
-        if (!main.GameCanvas.a) {
+        if (!main.GameCanvas.isLowGraphic) {
             for (var1 = 0; var1 < Effect2.vAnimate.size(); ++var1) {
                 ((Effect2) Effect2.vAnimate.elementAt(var1)).paint(var0);
             }
@@ -3495,7 +3481,7 @@ public final class GameScreen extends mScreen implements IChatable {
     }
 
     public static void b(mGraphics var0) {
-        if (!main.GameCanvas.a) {
+        if (!main.GameCanvas.isLowGraphic) {
             var0.setColor(dR, 0, 0, main.GameCanvas.z, main.GameCanvas.A);
         }
     }
@@ -3928,7 +3914,7 @@ public final class GameScreen extends mScreen implements IChatable {
                         }
                     } else if ((this.dU - this.dT > 0 || this.dT < TileMap.c) && this.dT > 0) {
                         var1.setColor(16777215);
-                        if (!main.GameCanvas.a && mSystem.d != 3 && mSystem.d != 5) {
+                        if (!main.GameCanvas.isLowGraphic && mSystem.d != 3 && mSystem.d != 5) {
                             var1.setColor(this.dU - this.dT, this.dV - this.dT, 2 * this.dT, 2 * this.dT, 0, 360);
                         } else {
                             var1.fillRect(0, 0, main.GameCanvas.z, main.GameCanvas.A);

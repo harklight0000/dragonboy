@@ -6,12 +6,12 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InMemoryResultSetImpl implements InMemoryResultSet {
+public class MyResultSetImpl implements MyResultSet {
     private Map<String, Object>[] data;
     private Object[][] values;
     private int indexData;
 
-    public InMemoryResultSetImpl(final ResultSet rs) throws Exception {
+    public MyResultSetImpl(final ResultSet rs) throws Exception {
         this.indexData = -1;
         try {
             rs.last();
