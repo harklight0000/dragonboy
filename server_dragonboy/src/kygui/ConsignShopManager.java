@@ -8,7 +8,7 @@ public class ConsignShopManager {
 
     private static ConsignShopManager instance;
     public long lastTimeUpdate;
-    public String[] tabName = {"Áo<>Quần", "Găng<>Tay", "Phụ<>Kiện", "Linh<>tinh", ""};
+    public String[] tabName = {"Áo\nQuần", "Găng\nTay", "Phụ\nKiện", "Linh\ntinh", ""};
     public List<ConsignItem> listItem = new ArrayList<>();
 
     public static ConsignShopManager gI() {

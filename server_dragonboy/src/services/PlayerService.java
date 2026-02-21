@@ -324,56 +324,17 @@ public class PlayerService {
     }
 
     public void chat(Player player, String text) {
- 
         if (TransactionService.gI().check(player)) {
             Service.gI().sendThongBao(player, "Không thể thực hiện");
             return;
         }
-
-     
-        boolean isCommand = false;
-
-        if (text.startsWith("ten con la ")) {
-            PetService.gI().changeNamePet(player, text.replaceAll("ten con la ", ""));
-            isCommand = true;
+        boolean isCommand = IngameCommand.gI().check(player, text);
+        if (isCommand) {
+            return;
         }
-        if (player.pet != null) {
-            switch (text) {
-                case "di theo", "follow" -> {
-                    player.pet.changeStatus(Pet.FOLLOW);
-                    isCommand = true;
-                }
-                case "bao ve", "protect" -> {
-                    player.pet.changeStatus(Pet.PROTECT);
-                    isCommand = true;
-                }
-                case "tan cong", "attack" -> {
-                    player.pet.changeStatus(Pet.ATTACK);
-                    isCommand = true;
-                }
-                case "ve nha", "go home" -> {
-                    player.pet.changeStatus(Pet.GOHOME);
-                    isCommand = true;
-                }
-                case "bien hinh" -> {
-                    player.pet.transform();
-                    isCommand = true;
-                }
-            }
-        }
-
-        if (player.isAdmin()) {
-            boolean handled = IngameCommand.gI().check(player, text);
-            if (handled) {
-                return;
-            }
-        }
-
-    
-        if (!isCommand) {
-            Service.gI().chat(player, text);
-        }
+        Service.gI().chat(player, text);
     }
+
     public final int constMoThanhVien = 10000;
 
     public boolean setActive(Player pl) {

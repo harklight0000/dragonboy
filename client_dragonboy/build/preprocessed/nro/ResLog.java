@@ -427,6 +427,7 @@ public final class ResLog {
    }
 
    public static void c(String var0) {
+       System.out.println("nro.ResLog.c()" + var0);
    }
 
    public static String[] splitString(String var0, String var1, int var2) {
